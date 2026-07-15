@@ -40,7 +40,7 @@ For each placeholder or weak metric in a picked bullet, ask the user for the num
 
 ### 4. Advisor review (subagents)
 
-Spawn the advisor agents from the data repo's `.claude/agents/` (default: recruiter-reviewer + hiring-manager; the user may name others) in parallel. Each prompt contains inline: the picked bullets with ids, the target role, and the writing rules from [references/bullet-writing.md](references/bullet-writing.md). Ask for: per-bullet score 1–5, verdict, and the one rewrite they'd ship (or "keep as-is"). Conclusions only, no file access.
+Spawn advisor subagents (default: recruiter-reviewer + hiring-manager; the user may name others) in parallel: read the data repo's `advisors/<name>.md` and inline its full contents as the subagent's persona prompt, no agent-registry lookup. Each prompt also contains inline: the picked bullets with ids, the target role, and the writing rules from [references/bullet-writing.md](references/bullet-writing.md). Ask for: per-bullet score 1–5, verdict, and the one rewrite they'd ship (or "keep as-is"). Conclusions only, no file access.
 
 ### 5. User chooses rewrites (human-in-the-loop)
 

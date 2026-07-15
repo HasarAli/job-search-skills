@@ -28,12 +28,13 @@ short summary; the main session does not hold the raw crawl.
 
 ### 2. Review (advisor subagents)
 
-Spawn the advisor agents from the data repo's `.claude/agents/` — at minimum
-`profile-platform-expert` and `recruiter-reviewer` — each as a subagent given the
-snapshot report path. Each reviews section by section (headline, about, experience,
-skills, featured, settings, ...) and returns scored findings and concrete rewrite
-suggestions. Advisors review and suggest; they never edit anything. Platform-specific
-review angles: `references/platform-notes.md`.
+Spawn advisor subagents — at minimum `profile-platform-expert` and `recruiter-reviewer`
+— by reading each one's `advisors/<name>.md` from the data repo and inlining its full
+contents as that subagent's persona prompt (no agent-registry lookup), plus the snapshot
+report path. Each reviews section by section (headline, about, experience, skills,
+featured, settings, ...) and returns scored findings and concrete rewrite suggestions.
+Advisors review and suggest; they never edit anything. Platform-specific review angles:
+`references/platform-notes.md`.
 
 ### 3. Recommend (main session)
 

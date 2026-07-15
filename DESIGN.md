@@ -13,7 +13,7 @@ Two-repo architecture for a job-search assistant that works in any industry and 
 - **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in `references/` lookup tables (`country-conventions.md`, `industry-conventions.md`, board lists) keyed by the user's `search-config.md`.
 - **Trust the user's numbers.** When the user supplies a metric or fact about themselves, write it in immediately; never demand justification.
 - **Never fabricate.** Every resume/outreach claim must trace to a line in `context/profile.md` or `context/career-diary.md`.
-- **Seeds, not state.** Skill directories are read-only engine code — `npx skills` updates overwrite them, so user customization must never live there. Anything user-customizable (resume template/theme overrides, search scripts, generated agents) is materialized into the data repo on first use; thereafter skills always prefer the data-repo copy and never edit their own references. The skill's references are seeds/defaults only — the advisor agents (onboard stage 5, generated into the data repo's `.claude/agents/`) are the existing example of the pattern.
+- **Seeds, not state.** Skill directories are read-only engine code — `npx skills` updates overwrite them, so user customization must never live there. Anything user-customizable (resume template/theme overrides, search scripts, generated advisor definitions) is materialized into the data repo on first use; thereafter skills always prefer the data-repo copy and never edit their own references. The skill's references are seeds/defaults only — the advisor definitions (onboard stage 5, generated into the data repo's `advisors/`) are the existing example of the pattern.
 
 ## Data repo layout (contract all skills share)
 
@@ -34,7 +34,7 @@ applications/
   qa-bank.md            reusable application answers (visa, salary, "why us" patterns)
   <id>.md               per-application record: JD snapshot, resume used, ad-hoc answers
 state.md                pipeline checklist — every skill reads it first, updates its stage on completion
-.claude/agents/         advisor agents GENERATED here by onboard (not shipped with skills)
+advisors/               generated advisor definitions (committed; skills inline them as subagent personas)
 ```
 
 `state.md` stages: `onboard:setup`, `onboard:context`, `onboard:targets`, `onboard:filters`, `onboard:advisors`, `resume`, `profile`, `search`, `apply`, ongoing `track`. Skills check prerequisites and, if missing, point the user at the earlier skill instead of failing obscurely.
@@ -47,7 +47,7 @@ Resumable via `state.md`; each stage is one sitting.
 - **context**: ingest existing resumes/reviews/project docs (subagents parse PDF/DOCX and return extracted facts); interview the user through their timeline; write `profile.md`; seed `highlights.md` with XYZ-format bullets (X = accomplishment, Y = measure, Z = method: "Accomplished [X] as measured by [Y] by doing [Z]"); initialize `career-diary.md` as append-only.
 - **targets**: interview → `role-preferences.md` (role list + positioning anchor, incl. "do not pursue").
 - **filters**: interview → `job-search-filters.md`. Targets and filters are separate docs — positioning vs. search logistics never mix.
-- **advisors**: generate 3–5 agents into the data repo's `.claude/agents/` from `references/advisor-archetypes/` templates (recruiter-reviewer, hiring-manager, industry-insider, profile-platform-expert), with `{{industry}}`/`{{country}}`/`{{role}}` placeholders filled from `search-config.md` + `role-preferences.md`. Archetypes, not real people; the user may optionally name real experts as "inspired by" flavor. Advisors review and score; they never edit files directly.
+- **advisors**: generate 3–5 advisor definitions into the data repo's `advisors/` from `references/advisor-archetypes/` templates (recruiter-reviewer, hiring-manager, industry-insider, profile-platform-expert), with `{{industry}}`/`{{country}}`/`{{role}}` placeholders filled from `search-config.md` + `role-preferences.md`. Archetypes, not real people; the user may optionally name real experts as "inspired by" flavor. Advisors review and score; they never edit files directly.
 
 References: `interview-guide.md` (question banks per stage), `country-conventions.md`, `industry-conventions.md`, `advisor-archetypes/*.md`.
 
