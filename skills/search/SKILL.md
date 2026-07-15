@@ -10,12 +10,12 @@ Source fresh postings via JobSpy (plus optional per-region board adapters), dedu
 ## Prerequisites
 
 1. Read `state.md`. Requires `onboard:targets` and `onboard:filters` complete. If `search/search-config.md`, `search/job-search-filters.md`, or `context/role-preferences.md` is missing, point the user at the `onboard` skill — do not improvise filters.
-2. JobSpy environment: see `references/jobspy-guide.md` for install and setup. If the data repo has no search script yet, create one there from the guide's template.
+2. JobSpy environment: see `references/jobspy-guide.md` for install and setup. **Seeds, not state:** `references/jobspy-guide.md` is a seed/default only. On first run, materialize its script template into `search/scripts/search_jobs.py` in the data repo. Every subsequent run executes and, if needed, edits that data-repo script — never re-reads or edits the skill's reference.
 
 ## Flow
 
 1. **Read inputs**: `search/search-config.md` (country, platforms), `search/job-search-filters.md` (comp, location, company type, logistics), `context/role-preferences.md` (role list — one query per target role; skip anything under "Do not pursue").
-2. **Run queries — delegate to a subagent.** Spawn one subagent to execute the JobSpy script(s) (one pass per role × region) and any board adapters from `references/boards.md` that `search-config.md` calls for. The subagent returns structured results only (company, title, location, posted date, comp if listed, url, source) — no raw dumps into the main context.
+2. **Run queries — delegate to a subagent.** Spawn one subagent to execute `search/scripts/search_jobs.py` (one pass per role × region) and any board adapters from `references/boards.md` that `search-config.md` calls for. The subagent returns structured results only (company, title, location, posted date, comp if listed, url, source) — no raw dumps into the main context.
 3. **Newest-first (binding)**: default window `hours_old` = 24–72h; sort by posted date descending. Widen the window (7d, then 14d) only when the fresh window returns thin results — note the widened window in the shortlist header.
 4. **Dedup**: load `search/seen-jobs.json`; drop any result whose normalized URL or company+title+location key is already cached. Append every newly surfaced job to the cache (key, company, title, url, `first_seen` date).
 5. **Filter**: apply `job-search-filters.md` constraints (comp floor, remote/location, company type). Borderline cases go in a "Watch" section, not silently dropped.
@@ -45,6 +45,7 @@ Designed to run without a user present: no questions, no confirmations. Apply th
 | File | Read/Write | Notes |
 |---|---|---|
 | `search/search-config.md`, `search/job-search-filters.md`, `context/role-preferences.md` | read | inputs |
+| `search/scripts/search_jobs.py` | materialize once, then read + execute | seeded from `references/jobspy-guide.md` on first run; edit only this copy thereafter |
 | `search/seen-jobs.json` | read + append | dedup cache, gitignored |
 | `search/shortlist-YYYY-MM-DD.md` | write | daily output, gitignored |
 | `state.md` | update | `search` stage: last run date |

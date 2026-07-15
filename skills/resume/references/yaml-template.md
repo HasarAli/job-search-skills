@@ -1,5 +1,7 @@
 # RenderCV YAML skeleton
 
+> Seed/default only — customize `resumes/template.yaml` in your data repo, not this file; skill updates overwrite it.
+
 Copy this per region file (`resumes/<Name>-<role-slug>-<region>-<timestamp>.yaml`), replace every `<...>` placeholder, and delete sections the target region omits (see "Per-region sections" below). Field syntax and gotchas: [rendercv-guide.md](rendercv-guide.md).
 
 ```yaml

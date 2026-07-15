@@ -47,6 +47,7 @@ Interview: compensation floor/target, location/remote, company type/size, logist
 2. For each of 3–5 advisors, copy a template from `references/advisor-archetypes/` (recruiter-reviewer, hiring-manager, industry-insider, profile-platform-expert), fill the placeholders, write to the data repo's `.claude/agents/<name>.md`.
 3. Archetypes, not real people. The user may optionally name real experts as "inspired by" flavor in the persona body.
 4. Advisors review, score, and rewrite **in their replies only** — they never edit files. This constraint is baked into each template; do not remove it.
+5. **Seeds, not state.** `references/advisor-archetypes/` are seeds/defaults; the materialized `.claude/agents/*.md` files belong to the user. If this stage reruns and customized agents already exist, ask before regenerating over them.
 
 ## File contracts
 

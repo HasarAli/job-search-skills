@@ -1,5 +1,7 @@
 # JobSpy Guide — install, script template, failure handling
 
+> Seed/default only — customize `search/scripts/search_jobs.py` in your data repo, not this file; skill updates overwrite it.
+
 [python-jobspy](https://github.com/speedyapply/JobSpy) scrapes LinkedIn, Indeed, Glassdoor, ZipRecruiter, Google Jobs, Bayt, Naukri, and BDJobs through one `scrape_jobs()` call returning a pandas DataFrame. Site list and per-site capabilities change between releases — check the README of the installed version rather than trusting this page.
 
 ## Install
@@ -22,7 +24,7 @@ Pin it in the data repo's root `requirements.txt` so cron runs are reproducible.
 
 ## Script template
 
-Save as `search/search_jobs.py` in the data repo. One invocation = one role × one region pass; the skill loops over the user's role targets.
+Materialized to `search/scripts/` on first run: the skill copies this template to `search/scripts/search_jobs.py` in the data repo, then always executes (and, if it needs edits, edits) that copy — never this reference. One invocation = one role × one region pass; the skill loops over the user's role targets.
 
 ```python
 import argparse
@@ -84,8 +86,8 @@ if __name__ == "__main__":
 Example passes:
 
 ```
-python search/search_jobs.py --search-term "senior data engineer" --location "United States" --remote --hours-old 72 --out search/raw-us.jsonl
-python search/search_jobs.py --search-term "senior data engineer" --location "Berlin" --sites indeed,linkedin --country-indeed germany --hours-old 72 --out search/raw-de.jsonl
+python search/scripts/search_jobs.py --search-term "senior data engineer" --location "United States" --remote --hours-old 72 --out search/raw-us.jsonl
+python search/scripts/search_jobs.py --search-term "senior data engineer" --location "Berlin" --sites indeed,linkedin --country-indeed germany --hours-old 72 --out search/raw-de.jsonl
 ```
 
 ## Output handling → shortlist markdown

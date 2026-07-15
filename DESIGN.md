@@ -13,6 +13,7 @@ Two-repo architecture for a job-search assistant that works in any industry and 
 - **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in `references/` lookup tables (`country-conventions.md`, `industry-conventions.md`, board lists) keyed by the user's `search-config.md`.
 - **Trust the user's numbers.** When the user supplies a metric or fact about themselves, write it in immediately; never demand justification.
 - **Never fabricate.** Every resume/outreach claim must trace to a line in `context/profile.md` or `context/career-diary.md`.
+- **Seeds, not state.** Skill directories are read-only engine code — `npx skills` updates overwrite them, so user customization must never live there. Anything user-customizable (resume template/theme overrides, search scripts, generated agents) is materialized into the data repo on first use; thereafter skills always prefer the data-repo copy and never edit their own references. The skill's references are seeds/defaults only — the advisor agents (onboard stage 5, generated into the data repo's `.claude/agents/`) are the existing example of the pattern.
 
 ## Data repo layout (contract all skills share)
 

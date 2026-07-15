@@ -17,6 +17,8 @@ The user drives this skill. You gather picks and decisions, spawn advisor subage
 - **Create** — no suitable YAML exists for the target role: full flow below.
 - **Edit/re-render** — a `resumes/*.yaml` already exists: edit it in place (content edits rarely touch the `design` block), then jump to step 6. Syntax rules: [references/rendercv-guide.md](references/rendercv-guide.md). Theme/design field reference: [references/themes.md](references/themes.md).
 
+**Seeds, not state:** `references/yaml-template.md` and `references/themes.md` are seeds/defaults only — never edited at runtime. `resumes/template.yaml` in the data repo is the live template; once it exists, every build reads it, not the skill's references.
+
 Orchestrator rules:
 
 - Advisor scoring/rewriting runs in subagents; the main session only relays bullets inline and collects the user's choices. Never grant an advisor file access — picked bullets travel in the prompt.
@@ -46,7 +48,9 @@ Show original vs. each advisor's rewrite side by side, per bullet. The user sele
 
 ### 6. Build YAML per region
 
-One file per target region from [references/yaml-template.md](references/yaml-template.md):
+If `resumes/template.yaml` doesn't exist yet in the data repo, seed it now: copy [references/yaml-template.md](references/yaml-template.md), fill it with the user's region conventions (photo, personal details, paper size, date format from the onboard skill's `references/country-conventions.md`) and a theme choice from [references/themes.md](references/themes.md). This is a one-time materialization — every later build (this skill or any future one) reads `resumes/template.yaml`, never the skill's references again. Theme/design customization from here on happens in `resumes/template.yaml` (or a per-resume YAML for a one-off override), never in the skill's `references/`.
+
+One file per target region, built from `resumes/template.yaml`:
 
 ```
 resumes/<Name>-<role-slug>-<region>-<yyyyMMdd_HHmm>.yaml

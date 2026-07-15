@@ -1,5 +1,7 @@
 # RenderCV theme & design reference
 
+> Seed/default only — customize `resumes/template.yaml` in your data repo, not this file; skill updates overwrite it.
+
 Load this only when tuning a design field or switching themes. For basic YAML editing, [yaml-template.md](yaml-template.md) is enough.
 
 All 6 built-in themes (`classic`, `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`) share the same `design` field structure — they only differ in default values. To use one, set `design.theme` and override any field below. Theme choice should follow the target industry/region's conventions — see the onboard skill's `references/industry-conventions.md` (document norms by field) and `references/country-conventions.md` (paper size, photo, length by country) — not personal preference.
