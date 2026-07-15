@@ -15,7 +15,7 @@ The user drives this skill. You gather picks and decisions, spawn advisor subage
 
 **Two paths:**
 - **Create** — no suitable YAML exists for the target role: full flow below.
-- **Edit/re-render** — a `resumes/*.yaml` already exists: edit it in place (content edits rarely touch the `design` block), then jump to step 6. Syntax rules: [references/rendercv-guide.md](references/rendercv-guide.md).
+- **Edit/re-render** — a `resumes/*.yaml` already exists: edit it in place (content edits rarely touch the `design` block), then jump to step 6. Syntax rules: [references/rendercv-guide.md](references/rendercv-guide.md). Theme/design field reference: [references/themes.md](references/themes.md).
 
 Orchestrator rules:
 

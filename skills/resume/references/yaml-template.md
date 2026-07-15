@@ -59,11 +59,23 @@ cv:
     # Languages:           # OneLineEntry — expected in most non-anglophone markets
 
 design:
-  theme: <classic|harvard|engineeringresumes|engineeringclassic|sb2nov|moderncv>
+  theme: <classic|harvard|engineeringresumes|engineeringclassic|sb2nov|moderncv>  # pick per industry/region — themes.md
   page:
-    size: <us-letter|a4>                       # per region convention
-  # Spacing/font overrides only if the render overflows or the theme needs tuning;
-  # theme defaults are fine to start. Field reference: rendercv-guide.md.
+    size: <us-letter|a4>                       # Letter for US/Canada, A4 nearly everywhere else — country-conventions.md
+    top_margin: <e.g. 0.7in or 6mm>             # tighten only if the render overflows one page
+    bottom_margin: <...>
+    left_margin: <...>
+    right_margin: <...>
+  typography:
+    font_size:
+      body: <e.g. 10-10.5pt>                    # theme default is fine to start
+  section_titles:
+    space_above: <e.g. 0.5cm>                   # tighten with sections.space_between_* to fit one page
+  sections:
+    space_between_regular_entries: <e.g. 1.2em>
+  # Full field reference, all 6 theme defaults, and a worked tightened-spacing
+  # example: references/themes.md. Only override fields you're actually changing —
+  # theme defaults apply to everything else.
 ```
 
 ## Per-region sections — include or omit

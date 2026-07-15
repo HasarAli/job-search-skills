@@ -32,7 +32,7 @@ PYTHONIOENCODING=utf-8 rendercv render resumes/<name>.yaml \
 
 ## Themes
 
-Built-in themes: `classic` (default), `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`. All share the same `design` field structure and differ only in defaults — switch by setting `design.theme` and overriding fields.
+Built-in themes: `classic` (default), `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`. All share the same `design` field structure and differ only in defaults — switch by setting `design.theme` and overriding fields. Full field reference, every theme's default design block, and a worked override example: [themes.md](themes.md).
 
 Picking one:
 
