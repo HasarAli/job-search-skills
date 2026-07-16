@@ -15,11 +15,11 @@ Pin it in the data repo's root `requirements.txt` as `rendercv[full]` so renders
 
 ```bash
 PYTHONIOENCODING=utf-8 rendercv render resumes/<name>.yaml \
-  -pdf resumes/<name>.pdf -png rendercv_output/<name>.png -md rendercv_output/<name>.md \
-  -typ rendercv_output/discard.typ -nohtml
+  -pdf output/<name>.pdf -png output/<name>.png -md output/<name>.md \
+  -typ output/discard.typ -nohtml
 ```
 
-- `-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, and RenderCV creates destination dirs as needed — point `-pdf` at `resumes/` (no subdir) so the PDF lands next to its YAML and gets committed alongside it. Point `-png`/`-md`/`-typ` at `rendercv_output/`, which lands in `resumes/rendercv_output/` — gitignored, so intermediates never get committed.
+- `-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, and RenderCV creates destination dirs as needed — point all four at `output/`, which lands in `resumes/output/` — gitignored, so no rendered output (PDF, PNG, MD, or Typst) ever gets committed. Only the source YAMLs' template (`resumes/template.yaml`) and theme assets are tracked.
 - **Always pass `-pdf`/`-png` explicitly with the YAML's basename.** The default output name is built from `cv.name` (e.g. `Jane_Doe_CV.pdf`), which collides across every base resume for the same person.
 - The Typst source is disposable — point `-typ` at a scratch path and forget it.
 

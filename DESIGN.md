@@ -26,9 +26,13 @@ context/
 search/
   search-config.md      country, industry, language, platforms — written by onboard, read by everyone
   job-search-filters.md comp, location, company type, logistics
-  shortlist-YYYY-MM-DD.md   daily output (GITIGNORED)
+  shortlists/
+    shortlist-YYYY-MM-DD.md   daily output (GITIGNORED)
   seen-jobs.json        dedup cache (GITIGNORED)
-resumes/                generated resume YAML + rendered PDFs
+resumes/
+  template.yaml          live template, tracked
+  <name>.yaml            per-role generated YAMLs (GITIGNORED)
+  output/                rendered PDF/PNG/MD/Typst (GITIGNORED)
 applications/
   applications.csv      one row per application
   qa-bank.md            reusable application answers (visa, salary, "why us" patterns)
@@ -69,7 +73,7 @@ References: `crawl-guide.md` (sections to capture), `platform-notes.md`.
 - Engine: JobSpy scripts (already proven) + optional per-country board adapters from `references/boards.md`.
 - **Prioritize new postings**: default window = postings from the last 24–72h; sort newest-first; shortlist ordered by posted date. Window widens only if results are thin.
 - Dedup against `seen-jobs.json`; every surfaced job is appended to the cache.
-- Output `search/shortlist-YYYY-MM-DD.md` with numbered entries (numbers are the `apply` skill's default references). Shortlists and cache are gitignored.
+- Output `search/shortlists/shortlist-YYYY-MM-DD.md` with numbered entries (numbers are the `apply` skill's default references). Shortlists and cache are gitignored.
 - Cron-able: designed to run unattended and leave the shortlist for review.
 
 References: `jobspy-guide.md` (env setup, script patterns), `boards.md` (per-country boards and notes).

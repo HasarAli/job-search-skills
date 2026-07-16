@@ -66,4 +66,4 @@ Commands, theme selection, and the Windows gotchas (UTF-8 env, never pass `--don
 
 ### 8. Report and record
 
-Report YAML + PDF paths per region and any metric placeholders left to fill. Update `state.md` (`resume` stage done). Commit the YAMLs and PDFs; only the typst/PNG/Markdown intermediates are gitignored.
+Report YAML + PDF paths per region and any metric placeholders left to fill. Update `state.md` (`resume` stage done). All rendered output lives in `resumes/output/` and is gitignored, along with the per-role YAMLs — only `resumes/template.yaml` and theme assets are tracked.

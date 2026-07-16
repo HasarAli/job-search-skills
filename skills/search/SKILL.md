@@ -21,7 +21,7 @@ Source fresh postings via JobSpy (plus optional per-region board adapters), dedu
 5. **Filter**: apply `job-search-filters.md` constraints (comp floor, remote/location, company type). Borderline cases go in a "Watch" section, not silently dropped.
 6. **Write the shortlist** and update `state.md` (`search` stage: last run date).
 
-## Output — `search/shortlist-YYYY-MM-DD.md`
+## Output — `search/shortlists/shortlist-YYYY-MM-DD.md`
 
 Numbered entries, newest-first. **Numbers are the `apply` skill's default references — never reorder after writing.**
 
@@ -47,7 +47,7 @@ Designed to run without a user present: no questions, no confirmations. Apply th
 | `search/search-config.md`, `search/job-search-filters.md`, `context/role-preferences.md` | read | inputs |
 | `search/scripts/search_jobs.py` | materialize once, then read + execute | seeded from `references/jobspy-guide.md` on first run; edit only this copy thereafter |
 | `search/seen-jobs.json` | read + append | dedup cache, gitignored |
-| `search/shortlist-YYYY-MM-DD.md` | write | daily output, gitignored |
+| `search/shortlists/shortlist-YYYY-MM-DD.md` | write | daily output, gitignored |
 | `state.md` | update | `search` stage: last run date |
 
 References: `references/jobspy-guide.md` (env setup, script template, failure handling), `references/boards.md` (per-region boards beyond JobSpy, adapter pattern).

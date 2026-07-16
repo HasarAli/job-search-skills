@@ -7,7 +7,7 @@ description: Apply to jobs from a shortlist — autofill each application, answe
 
 ## Args
 
-- Shortlist item numbers, e.g. `apply 1 3 5`. Default source: today's `search/shortlist-YYYY-MM-DD.md`.
+- Shortlist item numbers, e.g. `apply 1 3 5`. Default source: today's `search/shortlists/shortlist-YYYY-MM-DD.md`.
 - Optional date arg (`YYYY-MM-DD`) selects an older shortlist.
 - No numbers given → show the shortlist and ask which to apply to.
 
