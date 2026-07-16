@@ -23,6 +23,9 @@ context/
   career-diary.md       raw append-only archive of the user's notes
   highlights.md         resume-ready achievement bullets, XYZ format
   role-preferences.md   role targets, positioning, do-not-pursue
+  <Platform>/YYYY-MM-DD/
+    report.md            profile crawl snapshot, committed
+    reviews/             advisor review transcripts (GITIGNORED — raw output, not synthesized context)
 search/
   search-config.md      country, industry, language, platforms — written by onboard, read by everyone
   job-search-filters.md comp, location, company type, logistics

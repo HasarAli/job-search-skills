@@ -42,7 +42,8 @@ Also capture platform-surfaced meta where visible: profile completeness meter,
 
 ## Snapshot report structure
 
-Write to the data repo, e.g. `search/profile-snapshot-YYYY-MM-DD.md`:
+Write to the data repo at `context/<Platform>/YYYY-MM-DD/report.md`, e.g.
+`context/LinkedIn/2026-07-09/report.md`:
 
 ```markdown
 # Profile snapshot — <platform> — YYYY-MM-DD

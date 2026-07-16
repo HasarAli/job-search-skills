@@ -21,10 +21,11 @@ each individually confirmed.
 ### 1. Crawl (subagent)
 
 Spawn one subagent to crawl the profile with browser tools and write a structured
-snapshot report under the data repo (e.g. `search/profile-snapshot-YYYY-MM-DD.md`).
-What to capture per section and the report structure: `references/crawl-guide.md`.
-Crawl gently, the user's own profile only. The subagent returns the report path plus a
-short summary; the main session does not hold the raw crawl.
+snapshot report under the data repo at `context/<Platform>/YYYY-MM-DD/report.md` (e.g.
+`context/LinkedIn/2026-07-09/report.md`). What to capture per section and the report
+structure: `references/crawl-guide.md`. Crawl gently, the user's own profile only. The
+subagent returns the report path plus a short summary; the main session does not hold
+the raw crawl.
 
 ### 2. Review (advisor subagents)
 
@@ -33,7 +34,9 @@ Spawn advisor subagents — at minimum `profile-platform-expert` and `recruiter-
 contents as that subagent's persona prompt (no agent-registry lookup), plus the snapshot
 report path. Each reviews section by section (headline, about, experience, skills,
 featured, settings, ...) and returns scored findings and concrete rewrite suggestions.
-Advisors review and suggest; they never edit anything. Platform-specific review angles:
+Advisors review and suggest; they never edit anything. Write each advisor's full review
+to `context/<Platform>/YYYY-MM-DD/reviews/<advisor-name>.md` (gitignored — raw review
+transcripts, not synthesized context). Platform-specific review angles:
 `references/platform-notes.md`.
 
 ### 3. Recommend (main session)
