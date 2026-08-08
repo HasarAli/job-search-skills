@@ -1,0 +1,5 @@
+interface:
+  display_name: "Set search goals"
+  short_description: "Decide target roles, seniority, pay, and location"
+policy:
+  allow_implicit_invocation: false

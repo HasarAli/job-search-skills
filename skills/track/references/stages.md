@@ -1,46 +1,44 @@
-# Stage taxonomy
-
-`applied → screen → interview-N → offer | rejected | ghosted`
-
-## Definitions
+# Stages
 
 | Stage | Meaning |
 |---|---|
-| `applied` | Application submitted; no human response yet. Automated confirmation emails do not advance the stage. |
-| `screen` | A human engaged: recruiter reply, screening call scheduled or done, take-home/assessment sent. |
-| `interview-N` | Nth interview round with the hiring team (N = 1, 2, 3…). The recruiter screen is `screen`, not `interview-1`. Panels/onsites count as one round. |
-| `offer` | Offer extended (verbal or written). |
-| `rejected` | Explicit rejection at any point. Record the stage it arrived at in the note (e.g. "rejected after interview-2"). |
-| `ghosted` | No response past the ghosted threshold; user chose to close it out. |
+| `applied` | submitted, no human response yet — an automated confirmation email does not advance the stage |
+| `screen` | a human engaged: recruiter reply, screening call scheduled or done, assessment or take-home sent |
+| `interview-N` | Nth round with the hiring team (N = 1, 2, 3…). The recruiter screen stays `screen`; a panel or onsite counts as one round |
+| `offer` | offer extended, verbal or written |
+| `rejected` | explicit rejection — the note records the stage it arrived at, e.g. "rejected after interview-2" |
+| `ghosted` | silent past the ghost bar below, and the user chose to close it out |
 
-Terminal stages: `offer`, `rejected`, `ghosted`. Terminal rows are excluded from follow-up flagging.
+`offer`, `rejected`, and `ghosted` are terminal: their rows leave the stale sweep.
 
-## Valid transitions
+## Transitions
 
 - `applied → screen | rejected | ghosted`
 - `screen → interview-1 | rejected | ghosted`
 - `interview-N → interview-N+1 | offer | rejected | ghosted`
-- `ghosted → screen | interview-N` — reopening is valid; companies do resurface. Log the reopen event.
-- Never move backward otherwise. If an event seems to skip a stage (e.g. straight from `applied` to an onsite invite), skip forward — record reality, not the ideal ladder.
+- `ghosted → screen | interview-N` — companies resurface; log the reopen as an event.
 
-## Event → stage mapping
+Those four lines, plus forward skips, are the full set: an event that lands past the next stage moves straight there — `applied` plus an onsite invite lands at `interview-1`, recording where reality is rather than the rung below it.
+
+## Event → stage
 
 | Event reported | New stage |
 |---|---|
-| Recruiter reply, screening call invite/completed, assessment or take-home received | `screen` |
-| Interview invite/completed with hiring team (first) | `interview-1` |
-| Subsequent interview round invite/completed | increment N |
-| Offer received (verbal or written) | `offer` |
-| Rejection email/call at any point | `rejected` |
+| Recruiter reply, screening call invited or completed, assessment or take-home received | `screen` |
+| First interview with the hiring team, invited or completed | `interview-1` |
+| A later round, invited or completed | N + 1 |
+| Offer received, verbal or written | `offer` |
+| Rejection at any point | `rejected` |
 | User closes out a stale application | `ghosted` |
-| Learning, note, thank-you sent, follow-up sent | stage unchanged — event note only; resets the activity clock |
+| Learning, note, thank-you sent, follow-up sent | unchanged |
 
-Every event, stage-changing or not, gets a dated note in `applications/<id>.md` and updates the row's `last_activity` column.
+Every event refreshes `last_activity`, `notes`, and the `next_action` pair, stage change or not.
 
-## Ghosted criteria
+## The ghost bar
 
-Mark `ghosted` only when all three hold:
+Propose `ghosted` when both hold:
 
-1. No response for at least 2× `follow-up-days` (default: 28 days) since the last activity.
-2. At least one follow-up was sent (or the user explicitly declines to follow up).
-3. The user confirms — never auto-ghost; the skill proposes, the user decides.
+1. Silent for at least 2× `follow-up-days` since the last activity.
+2. A follow-up went out, or the user declined to send one.
+
+Set it once the user confirms.

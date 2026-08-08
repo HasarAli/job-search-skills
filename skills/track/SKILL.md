@@ -1,48 +1,55 @@
 ---
 name: track
-description: Track application outcomes and pipeline health. Use when the user wants to log a response, rejection, interview, or offer, update their applications, ask "how is my search going", or check follow-ups. Handles outcome logging, follow-up flagging, and periodic retros.
+description: >-
+  Log one application event onto its row in `applications.csv`, then sweep for
+  stale applications that need a nudge. Use when the user reports a recruiter
+  reply, rejection, interview, or offer, when
+  `inbox` hands over an application-status signal it read on a channel, or when
+  the user wants follow-ups checked. Reading inbound recruiter threads belongs
+  to `inbox`; submitting an application and creating its row belongs to `apply`;
+  the response-rate analysis belongs to `retro`.
 ---
 
-# Track — outcomes, follow-ups, retro
+# Track — outcomes and follow-ups
 
-Prerequisite: `applications/applications.csv` exists (created by the `apply` skill). If missing, point the user at `apply` — nothing to track yet.
+You log what is reported and propose everything else: the user sends every follow-up and confirms every ghost. A subagent may read `applications.csv`; facts from `career/` and `goals/` docs travel inline in the prompt you write.
 
-## File contract
+**Prerequisite** — read `applications.csv`. A missing CSV means nothing is tracked yet: hand off to `apply`.
 
-- `applications/applications.csv` — one row per application; `status` column holds the current stage.
-- `applications/<id>.md` — per-application record; outcome events are appended here as dated notes.
-- `search/search-config.md` — optional settings: `follow-up-days` (default 14), `retro-every` (default 50).
-- `state.md` — retro learnings become prep tasks here.
+## Files and settings
 
-Stage taxonomy: `applied → screen → interview-N → offer | rejected | ghosted`. Definitions, valid transitions, and event→stage mapping: `references/stages.md`.
+- `applications.csv` — one row per application, and the whole record. Column contract: apply's [references/record-format.md](../apply/references/record-format.md).
+- `goals/search-filters.md` — `follow-up-days` (default 14), `retro-every` (default 50).
 
-## 1. Log an outcome event
+Stages: `applied → screen → interview-N → offer | rejected | ghosted`. Definitions, transitions, the event→stage map, and the ghost bar: [references/stages.md](references/stages.md).
 
-When the user reports an event (recruiter reply, rejection, interview invite, offer, learning):
+## 1. Log the event
 
-1. Identify the application — match by company/role against the CSV; confirm if ambiguous.
-2. Update the row: set `status` to the new stage per `references/stages.md`; add a short note.
-3. Append to `applications/<id>.md`: `## YYYY-MM-DD — <event>` plus what the user said (who reached out, format, scheduling, learnings). Verbatim over paraphrase.
-4. If the event carries a learning (e.g. failed a system-design round), also record a prep task in `state.md`.
+The event comes from the user directly, or from `inbox` handing over a recruiter reply, rejection, or interview invitation it read on a channel.
 
-## 2. Follow-up flagging (every invocation)
+1. Match the event to a row by company and role; ask when two rows could fit.
+2. Set `status` from the event→stage map and `last_activity` to today.
+3. Rewrite `notes` so it reads as where this application stands now, the event's own words kept where they carry detail: who reached out, the format, what was scheduled, what the user learned. A retro two months out reads this, and paraphrase loses the round that failed. What the event superseded comes out.
+4. Set `next_action` and `next_action_date` to the move the event created — the user's reply to draft, the invitation to answer, the follow-up date when the ball is the company's. A terminal `status` empties both.
 
-On every invocation of this skill, after handling the user's request:
+A learning the event carried lives in `notes` and is named in the closing report — it goes nowhere else.
 
-1. Scan the CSV for applications whose `last_activity` column is older than `follow-up-days` (default 14) and whose stage is not terminal (`offer`, `rejected`, `ghosted`).
-2. List them: company, role, stage, days since last activity.
-3. Offer actions per item: draft a follow-up message (user sends it), mark `ghosted` (per criteria in `references/stages.md`), or snooze.
-4. Log any action taken as an event (step 1 flow).
+Done when: the row's `status`, `last_activity`, `notes`, and `next_action` pair all describe the application as it stands after this event.
 
-## 3. Retro (every `retro-every` applications)
+## 2. Sweep for stale rows
 
-When total applications crosses a multiple of `retro-every` (default 50) — or the user asks "how is my search going":
+Every invocation, once the user's request is handled.
 
-1. Spawn a subagent to analyze `applications/applications.csv` and the applied JDs in `applications/<id>.md` files. It returns numbers only: response rate, stage-conversion funnel (applied→screen→interview→offer), and patterns in applied JDs (common titles, keywords, seniority). Procedure: `references/retro-guide.md`.
-2. Present the funnel to the user with the interpretation guidance from `references/retro-guide.md` — which stage is leaking and what adjustment fits that leak.
-3. If response rate is below ~1/50, strongly recommend reviewing the resume, role targets, or search filters. This is a review trigger, not a hard rule — benchmarks differ per industry and market; discuss before changing anything.
-4. Learnings become prep tasks in `state.md`; agreed adjustments route to the owning skill (`resume`, `onboard` targets/filters).
+A row is stale when its stage is non-terminal and either its `next_action_date` has passed or `last_activity` is older than `follow-up-days`. List each: company, role, stage, the overdue `next_action`, days silent. Offer three moves per row — draft a nudge for the user to send, propose `ghosted` against the ghost bar in [references/stages.md](references/stages.md), or push the date out — then log whichever the user picks as an event (step 1).
 
-## Commit reminder
+Done when: every stale row carries the user's choice, and each nudge, ghost, and pushed date is on the row.
 
-Tracker updates are meant to be committed — git history is the audit trail. After writing, remind the user to commit `applications/` and `state.md` (or offer to).
+## 3. Close
+
+Report the row you moved, the stale rows and their choices, and any learning the event carried.
+
+When the total application count crosses a multiple of `retro-every`, say so and offer `retro` — the analysis runs there, not here.
+
+Tracker writes are the audit trail: offer to commit `applications.csv`.
+
+Done when: the report is with the user, the retro offer is made if the count crossed, and the commit offer is with the user.

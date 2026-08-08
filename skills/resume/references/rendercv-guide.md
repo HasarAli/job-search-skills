@@ -13,39 +13,41 @@ Pin it in the data repo's root `requirements.txt` as `rendercv[full]` so renders
 
 ## Render command
 
+`-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, so bare basenames land beside it — one directory and one basename (`<base>` = `<Name>-<role-slug>-<region>`) for the source and all its renders:
+
 ```bash
-PYTHONIOENCODING=utf-8 rendercv render resumes/<name>.yaml \
-  -pdf output/<name>.pdf -png output/<name>.png -md output/<name>.md \
-  -typ output/discard.typ -nohtml
+DIR="resumes/$(date +%F)"                 # local date → directory
+BASE="<Name>-<role-slug>-<region>"
+PYTHONIOENCODING=utf-8 rendercv render "$DIR/$BASE.yaml" \
+  -pdf "$BASE.pdf" -png "$BASE.png" -md "$BASE.md" \
+  -typ discard.typ -nohtml
 ```
 
-- `-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, and RenderCV creates destination dirs as needed — point all four at `output/`, which lands in `resumes/output/` — gitignored, so no rendered output (PDF, PNG, MD, or Typst) ever gets committed. Only the source YAMLs' template (`resumes/template.yaml`) and theme assets are tracked.
 - **Always pass `-pdf`/`-png` explicitly with the YAML's basename.** The default output name is built from `cv.name` (e.g. `Jane_Doe_CV.pdf`), which collides across every base resume for the same person.
-- The Typst source is disposable — point `-typ` at a scratch path and forget it.
+- The Typst source is disposable — point `-typ` at a scratch name and forget it.
 
-### Windows gotchas (do not skip)
+### Invisible provenance stamp
+
+The render time rides inside each output — it survives a copy and stays invisible to a reader. The YAML carries its own `# generated:` line from build time; the render adds two more:
+
+```bash
+TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"       # UTC ISO8601 — machine-readable
+# MD: an HTML comment, invisible when rendered
+printf '\n<!-- generated: %s | source: %s.yaml -->\n' "$TS" "$BASE" >> "$DIR/$BASE.md"
+# PDF: Typst writes the render time into the PDF's own CreationDate metadata — no extra step.
+```
+
+### Windows
 
 - **`PYTHONIOENCODING=utf-8` is required.** RenderCV prints checkmark glyphs (✓) that crash on the default cp1252 Windows console. Run via a bash shell (Git Bash) for the env-var prefix, or set `$env:PYTHONIOENCODING = 'utf-8'` first in PowerShell.
-- **Never pass `-notyp` / `--dont-generate-typst`.** PDF renders *from* the Typst file, so skipping Typst silently disables PDF (and PNG) too. Treat every `--dont-generate-*` flag as suspect; the only safe skip is `-nohtml`.
-- `-nohtml` is safe: PDF, PNG, and Markdown still generate.
-- Keep PNG generation on (no `-nopng`) — PNGs are the fastest way to inspect output, and **one PNG per page** doubles as the page-count check: a second PNG means the resume overflowed one page.
+- **`-nohtml` is the only safe skip flag.** PDF renders *from* the Typst file, so `-notyp` / any other `--dont-generate-*` silently takes PDF and PNG down with it, exit code 0 and no error.
+- Leave PNG generation on: it is the fastest way to inspect output, and RenderCV writes **one PNG per page**, so the file count is the page check.
 
 ## Themes
 
-Built-in themes: `classic` (default), `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`. All share the same `design` field structure and differ only in defaults — switch by setting `design.theme` and overriding fields. Full field reference, every theme's default design block, and a worked override example: [themes.md](themes.md).
+Built-in themes: `classic` (default), `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`. All share the same `design` field structure and differ only in defaults — switch by setting `design.theme` and overriding fields. Which theme suits which industry and region, the full field reference, every theme's default design block, and a worked override example: [themes.md](themes.md).
 
-Picking one:
-
-| Theme | Character |
-|---|---|
-| `classic` | Traditional, colored accents, footer/top-note on |
-| `harvard` | Dense, centered section titles, serif — conservative industries |
-| `engineeringresumes` | Black-and-white, no icons, single page focus — tech/engineering |
-| `engineeringclassic` | Left-aligned header, sans-serif |
-| `sb2nov` | Computer Modern (academic look) |
-| `moderncv` | Photo-friendly header, colored rule titles — regions where photos are customary |
-
-Region conventions (paper size `us-letter` vs `a4`, photo, page count) come from the onboard skill's `references/country-conventions.md`; apply them via `design.page.size`, `cv.photo`, and theme choice — never hardcode.
+Region conventions (paper size `us-letter` vs `a4`, photo, page count) come from `.agents/config/conventions/country-conventions.md`, applied via `design.page.size`, `cv.photo`, and theme choice.
 
 ## Editing YAML
 
@@ -61,14 +63,14 @@ Region conventions (paper size `us-letter` vs `a4`, photo, page count) come from
 - **Quote any string containing a colon** — the most common invalid-YAML cause: `title: "Results: A Study"`.
 - Inline Markdown only (`**bold**`, `*italic*`, `[text](url)`); no headers/lists inside values.
 - `date` and `start_date`/`end_date` are mutually exclusive. `start_date`/`end_date` need strict `YYYY-MM-DD`/`YYYY-MM`/`YYYY`; `end_date` omitted = `present`. `date` is free-form (`"Fall 2023"`).
-- Phone must be E.164 (`"+15551234567"`). Never invent one.
+- Phone must be E.164 (`"+15551234567"`), copied from `career/profile.md`.
 - Nested highlights: indent a sub-item two spaces under its parent line within the same string.
 - Editor autocompletion: put this on line 1 of every YAML:
   `# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json`
 
 ## Locales
 
-`--locale LOCALE` on `rendercv new`, or set `locale.language` in the YAML. ~20 built-ins (french, german, spanish, japanese, ...); override individual `locale` fields for custom month names/phrases. Pick per `search/search-config.md` working language.
+`--locale LOCALE` on `rendercv new`, or set `locale.language` in the YAML. ~20 built-ins (french, german, spanish, japanese, ...); override individual `locale` fields for custom month names/phrases. Pick per `goals/search-filters.md` working language.
 
 ## Troubleshooting
 

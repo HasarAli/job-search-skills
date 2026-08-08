@@ -1,99 +1,133 @@
-# Design — Generic Job-Search Skills
+# Design — Job-Search Skills
 
-Two-repo architecture for a job-search assistant that works in any industry and country.
+Fourteen skills a job seeker installs into their agent harness. They run a whole job
+search — background, targets, resume, profile, sources, daily shortlist, applications,
+inbox, tracking, interviews, retros — against a data repo the skills scaffold themselves.
 
-- **This repo (`job-search-skills`)** — the engine. Six skills under `skills/`, installed into a user's harness via `npx skills add <repo>`. No user data ever lives here.
-- **`job-search-template`** — the data repo a job seeker clones/forks. Empty skeletons, `state.md`, `.gitignore`, README. Git history is the tracking and error-tolerance layer: everything durable is committed; daily/derived artifacts are gitignored.
+- **This repo** — the engine. Skills under `skills/`, installed with `npx skills add <repo>`. No user data ever lives here.
+- **The user's data repo** — everything about one job seeker. Created by `init` on first run; nothing to clone or fork. Git history is the tracking and error-tolerance layer: everything durable is committed, daily and derived artifacts are gitignored.
+
+## Skills ship standalone and regenerate per-user artifacts
+
+Skill directories are read-only engine code — a `npx skills` update overwrites them — so
+nothing that encodes **who the user is** may ship as data, and nothing the user
+customizes may live in a skill.
+
+Anything per-user ships instead as a documented schema or skeleton in the owning skill's
+`references/`, filled with `<placeholder>` tokens, carrying the banner
+
+> A **seed**: copied once into `<path>`, which is where every later change lives. A skill update overwrites this file.
+
+The skill materializes it into the user's repo at `.agents/` on first use, and every run
+after that reads and edits the user's copy, never its own reference.
+
+| Seed | Materializes to | Owner |
+|---|---|---|
+| `resume/references/yaml-template.md` | `.agents/templates/resume.yaml` | `resume` |
+| `resume/references/themes/<theme>/` | `.agents/templates/<theme>/` | `resume` |
+| `sources/references/sources-schema.md` | `.agents/config/sources.json` | `sources` |
+| `sources/references/channels-schema.md` | `.agents/config/channels.md` | `sources` |
+| `init/references/conventions/*.md` | `.agents/config/conventions/` | `init` |
+| `init/references/scaffold.md` | the whole tree, incl. `.agents/state.md` | `init` |
+
+### The one exception: shipped scripts
+
+`search/scripts/` is real code, not a seed: `search_jobs.py`, `adapter_ats.py`,
+`adapter_remote.py`, `adapter_common.py`, `us/salary_*.py`, and their pinned
+`requirements.txt`. It ships because it is engine, never user-edited — the profession and
+region gates it applies are external config (`.agents/config/sources.json`), so retargeting
+it takes no code edit. Skills locate it relative to the installed skill directory and run
+it from the user's repo root, so relative cache paths resolve.
+
+Two deliberate consequences:
+
+- `us/` is a US/Canada-specific module (DOL LCA salary index) shipped by default, against
+  the "generic always" rule below. US/Canada is the expected majority of users and the
+  data has no equivalent elsewhere; every other market falls back to posted comp. Calling
+  it an exception is the honest framing — it is not a template for adding more.
+- A board no shipped adapter handles gets a **new** adapter written into the user's repo
+  at `.agents/scripts/adapter_<board>.py`. The shipped adapters are never extended in
+  place; an update would overwrite the edit.
 
 ## Skill-authoring philosophy
 
-- **Concise and high-level.** A `SKILL.md` is ≤ ~80 lines: trigger, flow, file contracts, human-in-the-loop points. Anything detailed, long, or occasionally needed goes in that skill's `references/` directory, loaded only when needed.
-- **Orchestrator pattern.** The main session interfaces with the user and delegates; skills must explicitly instruct spawning subagents for heavy work (parsing documents, scoring/rewriting content, crawling, synthesizing reports) so the main context stays small over long conversations. Each subagent gets one focused task and returns conclusions only.
-- **Interviews run in the main session** — subagents cannot talk to the user. Ask one question at a time; relay facts to subagents rather than granting them file access to personal docs.
-- **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in `references/` lookup tables (`country-conventions.md`, `industry-conventions.md`, board lists) keyed by the user's `search-config.md`.
+- **Concise and high-level.** A `SKILL.md` is ~50–90 lines: trigger, flow, file contracts, human-in-the-loop points. Anything detailed, long, or occasionally needed goes in that skill's `references/`, loaded only when needed.
+- **One seam per skill.** The "X belongs to `y`" clauses in every description are load-bearing: they are how a skill hands off at its edges instead of reaching across them.
+- **Orchestrator pattern.** The main session interfaces with the user and delegates; skills explicitly instruct spawning subagents for heavy work (parsing documents, scoring and rewriting content, crawling, running search passes, synthesizing reports) so the main context stays small over long conversations. Each subagent gets one focused task and returns conclusions only.
+- **Interviews run in the main session** — subagents cannot talk to the user. Ask one question at a time. Facts from `career/` and `goals/` travel inline in a subagent's prompt; those docs stay open in the main session only.
+- **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in a lookup table keyed by the user's own docs — `.agents/config/conventions/` for market norms, `sources/references/boards.md` for boards per region.
 - **Trust the user's numbers.** When the user supplies a metric or fact about themselves, write it in immediately; never demand justification.
-- **Never fabricate.** Every resume/outreach claim must trace to a line in `context/profile.md` or `context/career-diary.md`.
-- **Seeds, not state.** Skill directories are read-only engine code — `npx skills` updates overwrite them, so user customization must never live there. Anything user-customizable (resume template/theme overrides, search scripts, generated advisor definitions) is materialized into the data repo on first use; thereafter skills always prefer the data-repo copy and never edit their own references. The skill's references are seeds/defaults only — the advisor definitions (onboard stage 5, generated into the data repo's `advisors/`) are the existing example of the pattern.
+- **Never fabricate.** Every resume, profile, or outreach claim traces to a line in `career/profile.md` or `career/career-diary.md`.
+- **No standing todo lists.** Anything outstanding is either the `next_action` pair on an `applications.csv` row or a line in a skill's closing report. A checklist nobody sweeps rots within a week.
+- **Record decisions and actions only** — no deliberation, scope notes, meta commentary, or rejected options. If a decision needs justification, one short reason line.
 
-## Data repo layout (contract all skills share)
+## Harness independence
+
+Nothing here targets one agent runtime.
+
+Skills that must not fire on their own carry three layers, kept in step, because different
+harnesses read different ones:
+
+1. `disable-model-invocation: true` in the frontmatter
+2. `agents/openai.yaml` with `policy.allow_implicit_invocation: false`
+3. description wording — "Use only when the user explicitly asks…" — for harnesses that honour neither
+
+Six skills are explicit-invocation only: `init`, `goals`, `sources`, `optimize-linkedin`,
+`retro`, `teach`. The first five carry all three layers; `teach` carries 1 and 2 only —
+its description is upstream's, left unmodified. The rest trigger on conditions they can
+detect.
+
+**Never name a specific tool, model, or vendor in a skill.** Say "the browser tools this
+harness provides", not a tool id; "this harness's MCP client", not an install command.
+
+## The fourteen skills
+
+Each owns one seam. Six run only on the user's explicit request (**bold**).
+
+| Skill | Seam it owns |
+|---|---|
+| **`init`** | scaffolds the data repo — tree, `.gitignore`, `README.md`, `.agents/state.md`, market conventions, first commit. Asks nothing about the user |
+| `intake` | raw material → recorded facts. Sweeps `drop/`, reads the public URLs, interviews for the gaps, writes `career/profile.md` and appends to `career/career-diary.md` |
+| **`goals`** | what the user is searching for. Targets and positioning → `goals/role-preferences.md`; comp, location, logistics, cadences → `goals/search-filters.md`. The two never mix |
+| `highlights` | achievement bullets and their quality. XYZ format, a number or a visible placeholder on each, scored on a rubric → `career/highlights.md` |
+| `resume` | selection, assembly, render. User picks bullets, one YAML per target region, RenderCV → PDF in `resumes/<date>/` |
+| **`optimize-linkedin`** | the live profile page. Dated crawl snapshot, section-by-section scoring, each approved rewrite applied in the browser one confirmed edit at a time. An optional branch, never a prerequisite |
+| **`sources`** | the plumbing between the system and the outside world: boards, ATS registries, remote feeds, MCP endpoints, inbox channels, the salary index. No source goes live until it has returned rows |
+| `search` | the daily shortlist. Newest-first passes, dedup against the cache, filter, comp figure on every row → `shortlists/<date>.md`, numbered. Cron-able |
+| `apply` | form → submit → record. Autofill, Q&A bank, explicit user yes before every submit, then the `applications.csv` row and the JD snapshot |
+| `inbox` | inbound recruiter threads on every configured channel. Reads, scores, recommends; the user sends every reply |
+| `track` | one application event onto its row, then the stale-application sweep |
+| **`retro`** | the funnel over all applications so far — where it leaks, and which skill owns each fix |
+| `interview` | one scheduled round: format, research, question set matched to the user's stories, rehearsal, then the debrief |
+| **`teach`** | multi-session teaching on one topic, in `teach/<topic-slug>/`. Vendored from `mattpocock/skills` (MIT) with one repo-local scoping edit |
+
+## Data repo layout
+
+The contract every skill shares. Top level is what the user reads or edits; everything the
+agent maintains for itself is under `.agents/`.
 
 ```
-context/
-  profile.md            facts about the user (history, stack, stories, gaps) — single source of truth
-  career-diary.md       raw append-only archive of the user's notes
-  highlights.md         resume-ready achievement bullets, XYZ format
-  role-preferences.md   role targets, positioning, do-not-pursue
-  <Platform>/YYYY-MM-DD/
-    report.md            profile crawl snapshot, committed
-    reviews/             advisor review transcripts (GITIGNORED — raw output, not synthesized context)
-search/
-  search-config.md      country, industry, language, platforms — written by onboard, read by everyone
-  job-search-filters.md comp, location, company type, logistics
-  shortlists/
-    shortlist-YYYY-MM-DD.md   daily output (GITIGNORED)
-  seen-jobs.json        dedup cache (GITIGNORED)
-resumes/
-  template.yaml          live template, tracked
-  <name>.yaml            per-role generated YAMLs (GITIGNORED)
-  output/                rendered PDF/PNG/MD/Typst (GITIGNORED)
-applications/
-  applications.csv      one row per application
-  qa-bank.md            reusable application answers (visa, salary, "why us" patterns)
-  <id>.md               per-application record: JD snapshot, resume used, ad-hoc answers
-state.md                pipeline checklist — every skill reads it first, updates its stage on completion
-advisors/               generated advisor definitions (committed; skills inline them as subagent personas)
+drop/               raw material the user dumps at the start; gitignored but for its README
+career/             profile.md (single source of truth), career-diary.md, highlights.md
+goals/              role-preferences.md, search-filters.md
+shortlists/         one file per search day (GITIGNORED — regenerated)
+resumes/<date>/     one folder per render day; YAML + PDF committed, proofs are not
+applications.csv    one row per application, and the only record of one
+job-descriptions/   each posting as it appeared when applied to
+interviews/         prep and debrief, one file per application
+linkedin/           profile snapshots and the outstanding optimization plan
+teach/<topic>/      one folder per topic being learned
+.agents/
+  state.md          the stage machine — what has happened, never what should happen next
+  config/           sources.json, channels.md, conventions/, qa-bank.md, autofill-config.json
+  scripts/          custom board adapters, if any
+  templates/        resume.yaml and theme overrides
+  cache/            dedup keys, raw scrape output, salary index (GITIGNORED)
 ```
 
-`state.md` stages: `onboard:setup`, `onboard:context`, `onboard:targets`, `onboard:filters`, `onboard:advisors`, `resume`, `profile`, `search`, `apply`, ongoing `track`. Skills check prerequisites and, if missing, point the user at the earlier skill instead of failing obscurely.
+Everything belonging to one application shares one stem — `<id>-<company>-<role>` — so the
+CSV row, the posting, and the interview notes line up on sight.
 
-## The six skills
-
-### 1. `onboard` — staged interview → context docs + advisor agents
-Resumable via `state.md`; each stage is one sitting.
-- **setup**: capture country, industry, working language, target platforms → `search/search-config.md`. Verify data-repo skeleton exists.
-- **context**: ingest existing resumes/reviews/project docs (subagents parse PDF/DOCX and return extracted facts); interview the user through their timeline; write `profile.md`; seed `highlights.md` with XYZ-format bullets (X = accomplishment, Y = measure, Z = method: "Accomplished [X] as measured by [Y] by doing [Z]"); initialize `career-diary.md` as append-only.
-- **targets**: interview → `role-preferences.md` (role list + positioning anchor, incl. "do not pursue").
-- **filters**: interview → `job-search-filters.md`. Targets and filters are separate docs — positioning vs. search logistics never mix.
-- **advisors**: generate 3–5 advisor definitions into the data repo's `advisors/` from `references/advisor-archetypes/` templates (recruiter-reviewer, hiring-manager, industry-insider, profile-platform-expert), with `{{industry}}`/`{{country}}`/`{{role}}` placeholders filled from `search-config.md` + `role-preferences.md`. Archetypes, not real people; the user may optionally name real experts as "inspired by" flavor. Advisors review and score; they never edit files directly.
-
-References: `interview-guide.md` (question banks per stage), `country-conventions.md`, `industry-conventions.md`, `advisor-archetypes/*.md`.
-
-### 2. `resume` — create / edit / render
-- Read `role-preferences.md` + `highlights.md` → user picks 3–6 bullets per role → advisor agents (subagents) score and rewrite → user picks rewrites → build resume YAML per target region → render to PDF.
-- Engine: RenderCV (YAML → Typst PDF). Region/industry customs (photo, personal details, A4 vs Letter, length, date formats, CV vs resume) come from `references/country-conventions.md` — applied to content and template choice, never hardcoded.
-- Filenames: `<Name>-<role-slug>-<region>-<timestamp>` — full names matter because autofill setups reference one canonical file.
-- Windows gotcha (must be in references): set UTF-8 env for rendercv; do not pass `--dont-generate-*` flags.
-
-References: `rendercv-guide.md`, `yaml-template.md`, `bullet-writing.md` (XYZ + skim-test rules), `country-conventions.md` (shared copy or pointer).
-
-### 3. `profile` — audit + optimize the user's professional profile
-- Default adapter: LinkedIn via browser tools; other platforms (Xing etc.) chosen in `search-config.md`.
-- Flow: crawl the user's profile (subagent) → detailed snapshot report → advisor agents review section-by-section → present recommendations → user picks → apply approved edits **one at a time, each confirmed** (browser automation on their logged-in session). Photo/cover changes are flagged for the user to do manually.
-
-References: `crawl-guide.md` (sections to capture), `platform-notes.md`.
-
-### 4. `search` — daily shortlist, newest-first
-- Engine: JobSpy scripts (already proven) + optional per-country board adapters from `references/boards.md`.
-- **Prioritize new postings**: default window = postings from the last 24–72h; sort newest-first; shortlist ordered by posted date. Window widens only if results are thin.
-- Dedup against `seen-jobs.json`; every surfaced job is appended to the cache.
-- Output `search/shortlists/shortlist-YYYY-MM-DD.md` with numbered entries (numbers are the `apply` skill's default references). Shortlists and cache are gitignored.
-- Cron-able: designed to run unattended and leave the shortlist for review.
-
-References: `jobspy-guide.md` (env setup, script patterns), `boards.md` (per-country boards and notes).
-
-### 5. `apply` — autofill → human-approved submit → record
-- **First-run branch**: no autofill config found → offer to set up an autofill service (Simplify is the default adapter, optional). Upload ONE canonical resume (free tiers allow one), record its full filename and upload date in `applications/autofill-config.md`, fill the service's profile fields for deterministic autofill.
-- Flow per job (args: shortlist numbers, default = today's shortlist; or a date): open posting → autofill (extension + browser tools) → fill gaps from `qa-bank.md` → ask the user for any genuinely new answers → **STOP: never submit; ask explicit permission per application** → on submit, write the record.
-- Record = row in `applications.csv` (id, datetime, company, role, location, source, url, resume filename, status=applied, last_activity=submission date, notes) + `applications/<id>.md` (JD snapshot, resume used, all ad-hoc answers). New answers are appended to `qa-bank.md` — the bank compounds and halves application time over the first dozen applications.
-
-References: `autofill-setup.md`, `record-format.md`, `qa-bank-format.md`.
-
-### 6. `track` — outcomes, follow-ups, retro
-- Log outcome events (recruiter reply, rejection, interview stage, offer, learnings) → update the CSV row + `<id>.md`. Stage taxonomy: applied → screen → interview-N → offer | rejected | ghosted.
-- Flag applications with no response after N days (default 14) for follow-up.
-- **Retro trigger**: every 50 applications (configurable), compute response rate and stage-conversion; if response rate < ~1/50, strongly consider changes to resume, targets, or filters — a review trigger, not a hard rule; thresholds differ per industry. Learnings (e.g. a failed interview type) become prep tasks in `state.md`.
-
-References: `retro-guide.md`, `stages.md`.
-
-## Out of scope (phase 3, not designed yet)
-LinkedIn engagement mining, content creation, recruiter-reply drafting — one future `engage` skill.
+`.agents/state.md` stages: `init`, `intake`, `goals`, `sources`, `highlights`, `resume`,
+`optimize-linkedin`, `search`, `apply`, `inbox`, `track`. Skills check prerequisites and,
+if one is missing, hand off to the skill that owns it instead of failing obscurely.

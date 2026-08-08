@@ -1,10 +1,14 @@
 # RenderCV theme & design reference
 
-> Seed/default only — customize `resumes/template.yaml` in your data repo, not this file; skill updates overwrite it.
+> A **seed**: design changes live in `.agents/templates/resume.yaml`, or in one region file for a one-off. A skill update overwrites this file.
 
-Load this only when tuning a design field or switching themes. For basic YAML editing, [yaml-template.md](yaml-template.md) is enough.
+Load this when tuning a design field or switching themes. For basic YAML editing, [yaml-template.md](yaml-template.md) is enough.
 
-All 6 built-in themes (`classic`, `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`) share the same `design` field structure — they only differ in default values. To use one, set `design.theme` and override any field below. Theme choice should follow the target industry/region's conventions — see the onboard skill's `references/industry-conventions.md` (document norms by field) and `references/country-conventions.md` (paper size, photo, length by country) — not personal preference.
+- [Complete field reference](#complete-field-reference-classic-theme-defaults) — every `design` field, with `classic` values
+- [Theme defaults](#theme-defaults) — per-theme diffs from `classic`, each with a "when to use"
+- [Worked example](#worked-example-customizing-a-theme) — `engineeringresumes` tightened onto one page
+
+All 6 built-in themes (`classic`, `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`) share the same `design` field structure — they only differ in default values. To use one, set `design.theme` and override any field below. Theme choice follows the target industry and region: `.agents/config/conventions/industry-conventions.md` (document norms by field) and `.agents/config/conventions/country-conventions.md` (paper size, photo, length by country).
 
 ## Complete field reference (classic theme defaults)
 
@@ -384,7 +388,7 @@ design:
 
 ## Worked example: customizing a theme
 
-Overrides are applied on top of a theme's defaults, not instead of them — only list the fields you're changing. Example: `engineeringresumes` tightened for a denser single-page fit and switched to a different font/link color:
+Overrides apply on top of a theme's defaults, so list only the fields being changed. Example: `engineeringresumes` tightened for a denser single-page fit, with a different font and link color:
 
 ```yaml
 design:
@@ -431,4 +435,10 @@ design:
       space_between_items: 0.2em
 ```
 
-Reach for overrides only when the render overflows a page or a theme default clashes with region/industry convention — theme defaults are fine to start.
+Start on theme defaults; reach for overrides when the render overflows a page or a default clashes with region or industry convention.
+
+## Template overrides
+
+A handful of spacing decisions are hardcoded in a theme's Typst templates and exposed by no `design` field. Overriding one means shadowing that template: a directory named exactly as the theme, holding a copy of the single template being changed, placed where the render resolves it — beside the input YAML.
+
+`references/themes/engineeringresumes/Header.j2.typ` is one such override, and a **seed**: copy the theme directory to `.agents/templates/<theme>/` on first use and edit the copy there, then place it for the render. It exposes the gap between wrapped connection lines and the color of custom connections, both marked `EDITABLE` at the top of the file. Reach for this only after the `design` fields above have been exhausted — a shadowed template drifts from the packaged theme on every RenderCV upgrade.

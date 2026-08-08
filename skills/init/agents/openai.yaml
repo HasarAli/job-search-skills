@@ -1,0 +1,5 @@
+interface:
+  display_name: "Set up job search"
+  short_description: "Scaffold the project and start tracking file history"
+policy:
+  allow_implicit_invocation: false

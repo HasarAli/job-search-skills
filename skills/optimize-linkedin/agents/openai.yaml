@@ -1,0 +1,5 @@
+interface:
+  display_name: "Optimize LinkedIn"
+  short_description: "Audit and rewrite the live LinkedIn profile"
+policy:
+  allow_implicit_invocation: false

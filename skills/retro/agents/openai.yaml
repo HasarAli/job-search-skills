@@ -1,0 +1,5 @@
+interface:
+  display_name: "Search retro"
+  short_description: "Find where applications are getting stuck"
+policy:
+  allow_implicit_invocation: false

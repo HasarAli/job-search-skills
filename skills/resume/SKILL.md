@@ -1,69 +1,69 @@
 ---
 name: resume
 description: >-
-  Create, draft, edit, or render a resume/CV with RenderCV (YAML -> Typst PDF).
-  Human-led: the user picks achievement bullets from context/highlights.md,
-  advisor agents score and rewrite them, the user chooses the rewrites, then a
-  YAML is built per target region and rendered to PDF. Also covers editing an
-  existing resumes/*.yaml and re-rendering it. Use when asked to create, draft,
-  update, edit, or render a resume or CV.
+  Build, tailor, edit, or render the user's resume/CV: the user picks bullets
+  from `career/highlights.md`, you assemble one YAML per target region, and
+  RenderCV turns each into a PDF. Use when the user says "write my resume",
+  "tailor my resume for this role", "update my CV", "re-render my resume", or
+  wants a resume PDF. Writing, scoring, and rewriting the bullets themselves
+  belongs to `highlights`; LinkedIn and other profile pages belong to
+  `optimize-linkedin`; filling in and submitting applications belongs to `apply`.
 ---
 
-The user drives this skill. You gather picks and decisions, spawn advisor subagents, and assemble the YAML — never choose highlights or apply rewrites without the user's say-so.
+Selection, assembly, render. Bullet quality is already settled by `highlights` — this run picks the right bullets for the target and puts them on a page. The user picks; apply exactly what they select.
 
-**Prerequisites** — read `state.md` first. Needs `context/highlights.md` and `context/role-preferences.md` (written by the `onboard` skill). If either is missing, stop and point the user at `onboard` instead of improvising.
+**Prerequisites** — read `.agents/state.md`, `career/highlights.md`, and `goals/role-preferences.md`. A missing doc hands off to `intake` (facts) or `goals` (targets); a `career/highlights.md` too thin for the target hands off to `highlights`.
 
-**Two paths:**
-- **Create** — no suitable YAML exists for the target role: full flow below.
-- **Edit/re-render** — a `resumes/*.yaml` already exists: edit it in place (content edits rarely touch the `design` block), then jump to step 6. Syntax rules: [references/rendercv-guide.md](references/rendercv-guide.md). Theme/design field reference: [references/themes.md](references/themes.md).
+**Two branches:**
 
-**Seeds, not state:** `references/yaml-template.md` and `references/themes.md` are seeds/defaults only — never edited at runtime. `resumes/template.yaml` in the data repo is the live template; once it exists, every build reads it, not the skill's references.
+- **Create** — no resume YAML fits the target: steps 1–6.
+- **Edit/re-render** — a resume YAML exists: edit it in place (content edits leave the `design` block alone), then render (step 5) and report (step 6). Field syntax: [references/rendercv-guide.md](references/rendercv-guide.md). Design fields: [references/themes.md](references/themes.md).
 
-Orchestrator rules:
+Content sources are `career/`, `goals/`, and `.agents/templates/resume.yaml` — a previously rendered resume is an output, not a source.
 
-- Advisor scoring/rewriting runs in subagents; the main session only relays bullets inline and collects the user's choices. Never grant an advisor file access — picked bullets travel in the prompt.
-- Never read old resumes in `resumes/` during a create; `context/` docs and the YAML template are the only content sources.
+## 1. Inputs
 
-## Create flow
+Resolve the target role from the user's argument, else the first entry under "Targets — apply now" in `goals/role-preferences.md`; its positioning drives the Summary and the Skills ordering. Summary facts come from `career/profile.md`. Regions come from `goals/search-filters.md` unless the user names them.
 
-### 1. Inputs
+Done when: target role, regions, and the positioning line are stated back to the user.
 
-Read `context/role-preferences.md` and `context/highlights.md`. Resolve the target role (argument, else the first active target) and use its positioning for the Summary and Skills ordering. Pull Summary facts from `context/profile.md`. Target regions come from `search/search-config.md` unless the user names them.
+## 2. The user picks the highlights
 
-### 2. User picks the highlights (human-in-the-loop)
+Present the `career/highlights.md` bullets as plain text, grouped by role and section, each with its `section.entry` id. Ask for 3–6 per experience entry and suggest a thematic spread (impact, leadership, cross-functional, technical depth).
 
-Present the `highlights.md` bullets grouped by role/section and ask the user to pick **3–6 per experience entry**. Suggest a thematic balance (e.g. impact, leadership, cross-functional, technical depth) but the picks are theirs. Plain-text question, not a widget — too many options.
+Done when: every experience entry carries 3–6 user-chosen ids.
 
-### 3. Fill missing metrics (human-in-the-loop)
+## 3. Fill open placeholders
 
-For each placeholder or weak metric in a picked bullet, ask the user for the number, one at a time. Write the answer into the working bullet, `context/highlights.md`, and `context/career-diary.md` (the trace source). Never invent a number; if the user has none, keep the placeholder and carry it through — flag it in the final report.
+For each `{{METRIC: …}}` placeholder among the picks, ask the user once for the number. Take it as given and write it into the working bullet, `career/highlights.md`, and `career/career-diary.md`. A number the user doesn't have stays a placeholder and travels through to the final report. A picked bullet that reads badly for the target hands back to `highlights` — scoring and rewriting are not this skill's job.
 
-### 4. Advisor review (subagents)
+Done when: every picked bullet holds a number or a placeholder, and every new number appears in both docs.
 
-Spawn advisor subagents (default: recruiter-reviewer + hiring-manager; the user may name others) in parallel: read the data repo's `advisors/<name>.md` and inline its full contents as the subagent's persona prompt, no agent-registry lookup. Each prompt also contains inline: the picked bullets with ids, the target role, and the writing rules from [references/bullet-writing.md](references/bullet-writing.md). Ask for: per-bullet score 1–5, verdict, and the one rewrite they'd ship (or "keep as-is"). Conclusions only, no file access.
+## 4. Build one YAML per region
 
-### 5. User chooses rewrites (human-in-the-loop)
+**Seed** `.agents/templates/resume.yaml` if it doesn't exist yet: copy [references/yaml-template.md](references/yaml-template.md), fill in the target regions' conventions (photo, personal details, paper size, date format, work-authorization line) from `.agents/config/conventions/country-conventions.md`, and pick a theme from [references/themes.md](references/themes.md). Every build after that reads `.agents/templates/resume.yaml`; design changes live there, or in a single region file for a one-off.
 
-Show original vs. each advisor's rewrite side by side, per bullet. The user selects which rewrites to apply; "keep original" is always an option. Apply exactly what they select. If a rewrite needs a new fact, ask one question at a time and append the answer to `context/career-diary.md`.
-
-### 6. Build YAML per region
-
-If `resumes/template.yaml` doesn't exist yet in the data repo, seed it now: copy [references/yaml-template.md](references/yaml-template.md), fill it with the user's region conventions (photo, personal details, paper size, date format from the onboard skill's `references/country-conventions.md`) and a theme choice from [references/themes.md](references/themes.md). This is a one-time materialization — every later build (this skill or any future one) reads `resumes/template.yaml`, never the skill's references again. Theme/design customization from here on happens in `resumes/template.yaml` (or a per-resume YAML for a one-off override), never in the skill's `references/`.
-
-One file per target region, built from `resumes/template.yaml`:
+Build each region file from `.agents/templates/resume.yaml` into today's output directory:
 
 ```
-resumes/<Name>-<role-slug>-<region>-<yyyyMMdd_HHmm>.yaml
+resumes/<YYYY-MM-DD>/<Name>-<role-slug>-<region>.yaml
 ```
 
-`-` separates sections; `_` joins words within one (e.g. `Jane_Doe-senior_data_analyst-de-20260714_0930.yaml`). Full descriptive names matter — autofill setups reference one canonical file.
+- `<YYYY-MM-DD>` is today's local date. `-` separates sections, `_` joins words inside one: `Jane_Doe-senior_data_analyst-de.yaml`. Re-rendering the same target the same day overwrites in place — autofill setups reference this stable path.
+- Line 2, under the `# yaml-language-server` comment, carries `# generated: <ISO8601-UTC>` (e.g. `# generated: 2026-07-21T18:30:04Z`). The readable date is the directory; the exact render time hides inside the file.
 
-Fill headline, Summary, Experience highlights (the user's final bullets, in their `highlights.md` order), and role-ordered Skills. Apply the region's conventions (photo, personal details, paper size, length, work-authorization line) from the onboard skill's `references/country-conventions.md` — content differences between region files should be exactly the conventions, nothing else.
+Fill headline, Summary, Experience highlights (the user's picks, in `career/highlights.md` order), and Skills ordered by target-role relevance.
 
-### 7. Render
+Done when: one YAML per region exists, and a diff between any two of them shows region conventions and nothing else.
 
-Commands, theme selection, and the Windows gotchas (UTF-8 env, never pass `--dont-generate-*` flags): [references/rendercv-guide.md](references/rendercv-guide.md). A resume should be one page unless the region's conventions say otherwise — RenderCV writes one PNG per page, so a second PNG means it overflowed; trim and re-render. Inspect the PNGs, not the PDF.
+## 5. Render
 
-### 8. Report and record
+Commands, the remaining stamp carriers, Windows encoding, and the flag that silently kills the PDF: [references/rendercv-guide.md](references/rendercv-guide.md). Renders land in the source YAML's directory under its basename. Inspect the PNGs.
 
-Report YAML + PDF paths per region and any metric placeholders left to fill. Update `state.md` (`resume` stage done). All rendered output lives in `resumes/output/` and is gitignored, along with the per-role YAMLs — only `resumes/template.yaml` and theme assets are tracked.
+Done when: each region file has a PDF and exactly one PNG — a second PNG means the page overflowed, so trim and re-render — unless the region's conventions call for a multi-page CV.
+
+## 6. Report and record
+
+Report each region's `resumes/<YYYY-MM-DD>/` paths and every placeholder still open. Update the `resume` stage in `.agents/state.md`, then offer to commit the run: the YAML and the PDF are tracked, the PNG proofs and markdown intermediates are not. A resume named in an `applications.csv` row has to still exist to be worth naming — that is why the PDF is committed and not just regenerated.
+
+Done when: every region's paths and open placeholders are reported, and the `resume` stage is updated in `.agents/state.md`.
