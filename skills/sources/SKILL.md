@@ -25,7 +25,7 @@ Done when: every region × role in the targets names the board, feed, or ATS tha
 
 ## 2. Install the search engine
 
-The search scripts ship with the `search` skill under its `scripts/` directory — read-only engine code, run from the repo root, never copied into the user's repo. Install their pinned dependencies from `scripts/requirements.txt` and run one pass to confirm the environment: [references/jobspy-guide.md](references/jobspy-guide.md).
+The search scripts ship with the `search` skill under its `scripts/` directory, run from the repo root. Install their pinned dependencies from `scripts/requirements.txt` and run one pass to confirm the environment: [references/jobspy-guide.md](references/jobspy-guide.md).
 
 Done when: one `search_jobs.py` pass prints JSON-lines rows.
 
@@ -46,7 +46,7 @@ Done when: every new row carries its kind, address, and status, and the two filt
 
 ## 4. Probe a career site, write an adapter
 
-Identify the ATS behind an unknown site, then register it under step 3 where a shipped adapter already handles that kind. Where none does, write a new adapter to `.agents/scripts/adapter_<board>.py` in the user's repo — the shipped `adapter_ats.py` and `adapter_remote.py` are read-only and a skill update overwrites them. Endpoint per ATS, detection regexes, the open-source-library and browser-network-trace probes, and the adapter contract: [references/boards.md](references/boards.md).
+Identify the ATS behind an unknown site, then register it under step 3 where a shipped adapter already handles that kind. Where none does, write a new adapter to `.agents/scripts/adapter_<board>.py` in the user's repo. Endpoint per ATS, detection regexes, the open-source-library and browser-network-trace probes, and the adapter contract: [references/boards.md](references/boards.md).
 
 Done when: the endpoint returns a non-empty jobs array and the adapter emits its rows in the JobSpy field shape — `site`, `title`, `company`, `location`, `date_posted`, `min_amount`, `max_amount`, `currency`, `job_url`.
 

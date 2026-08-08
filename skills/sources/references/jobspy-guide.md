@@ -16,7 +16,7 @@ The pins live with the scripts, so a cron run reproduces an interactive one. `<s
 
 ## The search pass
 
-`scripts/search_jobs.py` ships with the `search` skill — read-only engine code, never copied into the user's repo. One invocation = one role × one region pass. Every command runs from the repo root so relative output paths land in the user's cache.
+`scripts/search_jobs.py` ships with the `search` skill. One invocation = one role × one region pass. Every command runs from the repo root so relative output paths land in the user's cache.
 
 | Flag | Meaning |
 |---|---|

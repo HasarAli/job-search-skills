@@ -9,9 +9,9 @@ inbox, tracking, interviews, retros — against a data repo the skills scaffold 
 
 ## Skills ship standalone and regenerate per-user artifacts
 
-Skill directories are read-only engine code — a `npx skills` update overwrites them — so
-nothing that encodes **who the user is** may ship as data, and nothing the user
-customizes may live in a skill.
+A `npx skills` update overwrites a skill directory, so nothing that encodes **who the
+user is** may ship as data. The user's own repo is git-tracked, so anything of theirs
+that a skill writes is recoverable.
 
 Anything per-user ships instead as a documented schema or skeleton in the owning skill's
 `references/`, filled with `<placeholder>` tokens, carrying the banner
