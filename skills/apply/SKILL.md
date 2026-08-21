@@ -8,12 +8,12 @@ description: >-
   tracker — inbound from a recruiter, or one they sent themselves outside this
   skill. What happens after a submit — replies, interviews, follow-ups — belongs
   to `track`; reading recruiter threads belongs to `inbox`; rendering the resume
-  PDF belongs to `resume`.
+  PDF belongs to `create-resume`.
 ---
 
 Relay facts inline in any prompt you write; `career/`, `goals/` and `applications.csv` stay in the main session.
 
-**Prerequisites** — read `.agents/state.md`. Applying from a shortlist needs `shortlists/<YYYY-MM-DD>.md`; with none present, hand off to `search`.
+**Prerequisites** — read `.agents/state.md` for the other stages. Applying from a shortlist reads the newest `shortlists/*.md` (the latest run); with none present, hand off to `search`.
 
 **Two branches:**
 
@@ -24,7 +24,7 @@ Steps 2–4 run one application at a time: the next posting opens only after thi
 
 ## 1. Selection and pre-batch check
 
-Selection is the shortlist entries the user names, by number or company (`apply 1 3 5`), from today's shortlist `shortlists/<today>.md`; a `YYYY-MM-DD` argument picks an older one. With nothing named, show the shortlist and ask which entries.
+Selection is the shortlist entries the user names, by number or company (`apply 1 3 5`), from the newest `shortlists/*.md` (the latest run); a date or filename argument picks an older one. With nothing named, show the shortlist and ask which entries.
 
 `.agents/config/autofill-config.json` missing → offer autofill setup before the batch: [references/autofill-setup.md](references/autofill-setup.md). `"service": "none"` is a complete config, and every field then comes from the bank and the user's answers.
 

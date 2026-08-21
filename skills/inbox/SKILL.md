@@ -6,15 +6,16 @@ description: >-
   what needs a reply, and what has gone silent. Use when the user asks to check
   their inbox, messages, or whether a recruiter has reached out, or names a
   platform to focus the sweep on or add to it. Outbound applications belong to
-  `apply`; logging what an inbound thread reports belongs to `track`; adding a
-  new channel belongs to `sources`.
+  `apply`; logging what an inbound thread reports belongs to `track`. This
+  skill also owns adding a channel (a new `##` section in
+  `.agents/config/channels.md`).
 ---
 
 Inbound only. You read, score, and recommend; the user sends every reply.
 
 **Prerequisites** — `.agents/state.md` for the last sweep date. A missing `goals/search-filters.md` hands off to `goals`.
 
-**Channels** — read `.agents/config/channels.md`: one `##` section per configured channel, holding its entry URL, how to open a thread, how to extract a body, and what to skip. Those sections are the channel list. A platform the user names with no section there gets onboarded by `sources` first.
+**Channels** — read `.agents/config/channels.md`: one `##` section per configured channel, holding its entry URL, how to open a thread, how to extract a body, and what to skip. Those sections are the channel list. A platform the user names with no section there gets onboarded by `inbox` first.
 
 ## 1. Read
 

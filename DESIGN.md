@@ -1,7 +1,7 @@
 # Design — Job-Search Skills
 
-Fourteen skills a job seeker installs into their agent harness. They run a whole job
-search — background, targets, resume, profile, sources, daily shortlist, applications,
+Thirteen skills a job seeker installs into their agent harness. They run a whole job
+search — background, targets, resume, profile, daily shortlist, applications,
 inbox, tracking, interviews, retros — against a data repo the skills scaffold themselves.
 
 - **This repo** — the engine. Skills under `skills/`, installed with `npx skills add <repo>`. No user data ever lives here.
@@ -23,31 +23,31 @@ after that reads and edits the user's copy, never its own reference.
 
 | Seed | Materializes to | Owner |
 |---|---|---|
-| `resume/references/yaml-template.md` | `.agents/templates/resume.yaml` | `resume` |
-| `resume/references/themes/<theme>/` | `.agents/templates/<theme>/` | `resume` |
-| `sources/references/sources-schema.md` | `.agents/config/sources.json` | `sources` |
-| `sources/references/channels-schema.md` | `.agents/config/channels.md` | `sources` |
-| `init/references/conventions/*.md` | `.agents/config/conventions/` | `init` |
+| `create-resume/references/yaml-template.md` | `.agents/templates/resume.yaml` | `create-resume` |
 | `init/references/scaffold.md` | the whole tree, incl. `.agents/state.md` | `init` |
 
 ### The one exception: shipped scripts
 
-`search/scripts/` is real code, not a seed: `search_jobs.py`, `adapter_ats.py`,
-`adapter_remote.py`, `adapter_common.py`, `us/salary_*.py`, and their pinned
-`requirements.txt`. It ships because it is engine, never user-edited — the profession and
-region gates it applies are external config (`.agents/config/sources.json`), so retargeting
-it takes no code edit. Skills locate it relative to the installed skill directory and run
-it from the user's repo root, so relative cache paths resolve.
+`search/search.py` and the `search/pipeline/` package are real code, not a seed: the
+fetch/dedup/filter/price engine (`sources/`, `comp/`, `store/`), its `defaults/` seeds,
+`requirements.txt`, and `tests/`. It ships because it is engine, never user-edited — the
+profession and region gates it applies are external config (`.agents/search/config.yaml`
+and `filters.py`), so retargeting it takes no code edit. Skills locate it relative to the
+installed skill directory and run it from the user's repo root, so relative cache paths
+resolve.
 
 Two deliberate consequences:
 
-- `us/` is a US/Canada-specific module (DOL LCA salary index) shipped by default, against
-  the "generic always" rule below. US/Canada is the expected majority of users and the
-  data has no equivalent elsewhere; every other market falls back to posted comp. Calling
-  it an exception is the honest framing — it is not a template for adding more.
-- A board no shipped adapter handles gets a **new** adapter written into the user's repo
-  at `.agents/scripts/adapter_<board>.py`. The shipped adapters are never extended in
-  place; an update would overwrite the edit.
+- `pipeline/comp/visa_wages.py` is a US/Canada-specific module (DOL LCA salary index)
+  shipped by default, against the "generic always" rule below. US/Canada is the expected
+  majority of users and the data has no equivalent elsewhere; every other market falls
+  back to posted comp. Calling it an exception is the honest framing — it is not a
+  template for adding more.
+- Sources are added by block in `config.yaml` (a tenant slug, a feed URL, a JSON path)
+  up to what the shipped adapters cover — `ats`, `feed`, `jobspy`, `jsonfile`. A board
+type none of them handles needs a new adapter: a change to the user's `.agents/search/`
+config and filters, never an edit to the shipped package, because an update would
+overwrite the edit.
 
 ## Skill-authoring philosophy
 
@@ -55,7 +55,7 @@ Two deliberate consequences:
 - **One seam per skill.** The "X belongs to `y`" clauses in every description are load-bearing: they are how a skill hands off at its edges instead of reaching across them.
 - **Orchestrator pattern.** The main session interfaces with the user and delegates; skills explicitly instruct spawning subagents for heavy work (parsing documents, scoring and rewriting content, crawling, running search passes, synthesizing reports) so the main context stays small over long conversations. Each subagent gets one focused task and returns conclusions only.
 - **Interviews run in the main session** — subagents cannot talk to the user. Ask one question at a time. Facts from `career/` and `goals/` travel inline in a subagent's prompt; those docs stay open in the main session only.
-- **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in a lookup table keyed by the user's own docs — `.agents/config/conventions/` for market norms, `sources/references/boards.md` for boards per region.
+- **Generic always.** No industry, country, company-tier, or platform assumption in skill prose. Anything culture- or market-specific lives in the user's own docs — `.agents/config/conventions/` for market norms, `.agents/search/config.yaml` for boards and sources per region.
 - **Trust the user's numbers.** When the user supplies a metric or fact about themselves, write it in immediately; never demand justification.
 - **Never fabricate.** Every resume, profile, or outreach claim traces to a line in `career/profile.md` or `career/career-diary.md`.
 - **No standing todo lists.** Anything outstanding is either the `next_action` pair on an `applications.csv` row or a line in a skill's closing report. A checklist nobody sweeps rots within a week.
@@ -72,17 +72,17 @@ harnesses read different ones:
 2. `agents/openai.yaml` with `policy.allow_implicit_invocation: false`
 3. description wording — "Use only when the user explicitly asks…" — for harnesses that honour neither
 
-Six skills are explicit-invocation only: `init`, `goals`, `sources`, `optimize-linkedin`,
-`retro`, `teach`. The first five carry all three layers; `teach` carries 1 and 2 only —
+Five skills are explicit-invocation only: `init`, `goals`, `optimize-linkedin`,
+`retro`, `teach`. The first four carry all three layers; `teach` carries 1 and 2 only —
 its description is upstream's, left unmodified. The rest trigger on conditions they can
 detect.
 
 **Never name a specific tool, model, or vendor in a skill.** Say "the browser tools this
 harness provides", not a tool id; "this harness's MCP client", not an install command.
 
-## The fourteen skills
+## The thirteen skills
 
-Each owns one seam. Six run only on the user's explicit request (**bold**).
+Each owns one seam. Five run only on the user's explicit request (**bold**).
 
 | Skill | Seam it owns |
 |---|---|
@@ -90,10 +90,9 @@ Each owns one seam. Six run only on the user's explicit request (**bold**).
 | `intake` | raw material → recorded facts. Sweeps `drop/`, reads the public URLs, interviews for the gaps, writes `career/profile.md` and appends to `career/career-diary.md` |
 | **`goals`** | what the user is searching for. Targets and positioning → `goals/role-preferences.md`; comp, location, logistics, cadences → `goals/search-filters.md`. The two never mix |
 | `highlights` | achievement bullets and their quality. XYZ format, a number or a visible placeholder on each, scored on a rubric → `career/highlights.md` |
-| `resume` | selection, assembly, render. User picks bullets, one YAML per target region, RenderCV → PDF in `resumes/<date>/` |
+| `create-resume` | selection, assembly, render. User picks bullets from `career/highlights.md`, one YAML per target region, RenderCV → PDF in `resumes/<date>/` |
 | **`optimize-linkedin`** | the live profile page. Dated crawl snapshot, section-by-section scoring, each approved rewrite applied in the browser one confirmed edit at a time. An optional branch, never a prerequisite |
-| **`sources`** | the plumbing between the system and the outside world: boards, ATS registries, remote feeds, MCP endpoints, inbox channels, the salary index. No source goes live until it has returned rows |
-| `search` | the daily shortlist. Newest-first passes, dedup against the cache, filter, comp figure on every row → `shortlists/<date>.md`, numbered. Cron-able |
+| `search` | the daily shortlist. Newest-first passes, dedup against the cache, filter, comp figure on every row → `shortlists/<timestamp>.md`, numbered. Cron-able |
 | `apply` | form → submit → record. Autofill, Q&A bank, explicit user yes before every submit, then the `applications.csv` row and the JD snapshot |
 | `inbox` | inbound recruiter threads on every configured channel. Reads, scores, recommends; the user sends every reply |
 | `track` | one application event onto its row, then the stale-application sweep |
@@ -119,15 +118,15 @@ linkedin/           profile snapshots and the outstanding optimization plan
 teach/<topic>/      one folder per topic being learned
 .agents/
   state.md          the stage machine — what has happened, never what should happen next
-  config/           sources.json, channels.md, conventions/, qa-bank.md, autofill-config.json
-  scripts/          custom board adapters, if any
+  config/           channels.md, conventions/, qa-bank.md, autofill-config.json
+  search/           config.yaml, filters.py (search sources + filters)
   templates/        resume.yaml and theme overrides
-  cache/            dedup keys, raw scrape output, salary index (GITIGNORED)
+  cache/            dedup keys and scrape output (GITIGNORED)
 ```
 
 Everything belonging to one application shares one stem — `<id>-<company>-<role>` — so the
 CSV row, the posting, and the interview notes line up on sight.
 
-`.agents/state.md` stages: `init`, `intake`, `goals`, `sources`, `highlights`, `resume`,
-`optimize-linkedin`, `search`, `apply`, `inbox`, `track`. Skills check prerequisites and,
+`.agents/state.md` stages: `init`, `intake`, `goals`, `highlights`, `create-resume`,
+`optimize-linkedin`, `apply`, `inbox`, `track`. Skills check prerequisites and,
 if one is missing, hand off to the skill that owns it instead of failing obscurely.

@@ -1,0 +1,8 @@
+python-jobspy==1.1.82
+feedparser
+pyyaml
+openpyxl
+curl-cffi
+
+# test
+pytest

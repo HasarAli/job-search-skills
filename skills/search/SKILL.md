@@ -1,78 +1,78 @@
 ---
 name: search
-description: >-
-  Run the job search into a numbered shortlist — pull fresh postings for the
-  user's role targets from every configured board, dedup against everything
-  already seen, and rank newest-first with a comp figure on every row. Use when
-  the user says "find jobs", "run the search", or wants today's shortlist, and
-  for unattended cron runs that leave the shortlist for later review. Applying
-  to shortlisted roles belongs to `apply`; reading inbound recruiter threads
-  belongs to `inbox`; adding a board, adapter, feed, or channel belongs to
-  `sources`.
+description: Run the job search into a numbered shortlist — pull fresh postings for the user's role targets from every configured source, dedup against everything already seen, and rank newest-first with a comp figure on every row. Use when the user says "find jobs", "run the search", or wants today's shortlist, and for unattended cron runs that leave the shortlist for later review.
 ---
 
-**Newest-first** binds the whole run: every pass windows on posted date, every output sorts on it descending.
+# search
 
-**Prerequisites** — `goals/search-filters.md` and `goals/role-preferences.md` both present; a missing one stops the run and hands off to `goals`. `.agents/config/sources.json` present; a missing registry hands off to `sources`.
-
-**Scripts** — the search engine ships with this skill under `scripts/`. `<skill-dir>` below is the directory holding this file; resolve it once and reuse the absolute path. Run every command from the user's repo root so the `.agents/` paths resolve. Dependencies are pinned in `<skill-dir>/scripts/requirements.txt`.
+The script fetches, dedups, filters, and prices postings; you turn its JSON into the shortlist.
 
 ## Run
 
-1. **Read inputs.** `goals/search-filters.md` → country, platform list, comp floor, remote/location rules, company type. `goals/role-preferences.md` → one search term per role target, skipping everything under "Do not pursue". Done when: every non-excluded role target carries a search term and every filter value — comp floor, remote rule, company type — is in hand.
-
-2. **Run the passes in a subagent.** Spawn one subagent and hand it the search terms, regions, windows, platform list, and the resolved `<skill-dir>/scripts` path *in the prompt* — the `goals/` docs stay in the main session. It runs `scripts/search_jobs.py` once per role × region, plus the board adapters `goals/search-filters.md` names, and returns JSON-lines rows (`site`, `title`, `company`, `location`, `date_posted`, `min_amount`, `max_amount`, `currency`, `job_url`).
-
-   Window: start at `hours_old` 24–72; widen to 168, then 336, for a role returning under ~5 fresh rows, and record the widened window in the shortlist header.
-
-   Done when: every role × region × platform combination has either returned rows or been recorded as a failed source.
-
-3. **Dedup.** Key = lowercase `job_url` stripped of query params, falling back to a `company|title|location` slug for cross-board duplicates of one posting. Drop keys already in `.agents/cache/seen-jobs.json`, then append every survivor (`key`, `company`, `title`, `url`, `first_seen`). Done when: the cache holds a key for every row that reaches the shortlist.
-
-4. **Filter.** Apply the `goals/search-filters.md` constraints. A clean pass lands in **Apply now**; a judgment call lands in **Watch** with the constraint it strains named; a row the filters cut goes into the Watch cut line with the filter that cut it. Done when: every deduped row appears in one of those three places.
-
-5. **Comp.** For every row with no posted comp, run `salary_lookup.py` for the DOL base-pay **floor** (`source: dol_lca_base`). On `n=0` — and only in an interactive session — fall back to the Levels.fyi total-comp browser lookup (`source: levels_fyi_tc`); in a cron run write "no DOL match; Levels pending (interactive)". Flags and procedure: [references/salary-lookup.md](references/salary-lookup.md). Done when: every comp-less row carries a DOL floor, a Levels figure, or that pending note.
-
-6. **Write.** Write the shortlist below, then set the `search` stage in `.agents/state.md` to today's date. Done when: the shortlist file exists with continuous numbering *and* `.agents/state.md`'s `search` stage reads today's date — `apply`, `inbox`, and `track` read that stage for the last run.
-
-## Output — `shortlists/<YYYY-MM-DD>.md`
-
-Numbering runs continuously across sections: **Apply now** takes 1..n, **Watch** resumes at n+1 (the `7.` below assumes Apply now ended at 6). The numbers are how `apply` addresses rows: assign them at write time and keep them stable. One `Cut:` line per filter that cut rows.
-
+```bash
+python .agents/skills/search/search.py                  # prints JSON to stdout
+python .agents/skills/search/search.py --json path.json # hand in agent-collected postings
 ```
+
+Exit codes: `0` shortlist produced · `1` nothing collected · `2` config error (JSON on stderr).
+
+## Render the shortlist
+
+Read the JSON on stdout, write `shortlists/<YYYY-MM-DD-HHMMSS>.md`:
+
+```markdown
 # Shortlist — YYYY-MM-DD
-Sources: <sites/boards run; failed sources named>. Window: <hours_old>.
-Filters: `goals/search-filters.md`; targets: `goals/role-preferences.md`.
+Sources: <which sources ran; name any that failed>. Window: <posted_since_hours or "—">.
 
 ## Apply now
 
-1. **<Company> — <Role>** — <location> — posted <date> — <comp or "not listed">
+1. **<company> — <title>** — <location> — posted <date or "—"> — <comp>
    <url>
-   Fit: <one line against the role targets and filters>
+   Fit: <one line against role targets and filters>
 
 ## Watch
 
-7. **<Company> — <Role>** — ... — Strains <constraint>: <why it is a judgment call>
+7. **<company> — <title>** — … — Strains <constraint>: <why>
 
-Cut: <filter> — <company (figure)>, <company (figure)>
+Cut: <filter> — <company (figure)>, …
 ```
 
-## Unattended runs
+- Number rows continuously, newest first (the script already sorts them).
+- Comp: if `stated_comp` carries a range, write `$min–$max (stated)`; else if `comp.floor_value`, write `$<floor_value> (<provenance>)`; else "not listed".
+- A row that strains a filter but is otherwise a fit goes in **Watch**, naming the constraint; a row a filter cut goes in the **Cut** line.
 
-Runs headless on cron with no user present. Apply the filters as written, park every judgment call in **Watch**, and finish by writing the shortlist for the user to review later. A source that fails (rate limit, network, adapter error) is named in the header and skipped; the run completes on the remaining sources.
+## Add a source
 
-## File contracts
+Append a block to `.agents/search/config.yaml` → `sources:`. Not listed = not run.
 
-| File | Mode | Notes |
-|---|---|---|
-| `goals/search-filters.md`, `goals/role-preferences.md` | read | run inputs |
-| `<skill-dir>/scripts/search_jobs.py` | execute | JobSpy pass, one per role × region |
-| `<skill-dir>/scripts/adapter_ats.py`, `adapter_remote.py` | execute | ATS + remote-board pulls |
-| `.agents/config/sources.json` | read | board registries the adapters fetch (rows marked `live`) plus the profession + region scope filters |
-| `<skill-dir>/scripts/us/salary_lookup.py`, `salary_index.py` | execute | US DOL LCA comp lookup; DB path via `SALARY_DB` |
-| `.agents/scripts/adapter_<board>.py` | execute | custom adapters `sources` wrote for this user, if any |
-| `.agents/cache/seen-jobs.json` | read + append | dedup cache, gitignored |
-| `shortlists/<YYYY-MM-DD>.md` | write | daily output, gitignored |
-| `.agents/state.md` | update | `search` stage: last run date |
+```yaml
+  - name: greenhouse            # ATS tenant: company slug
+    tenants: [acme, globex]
+  - name: ashby
+    tenants: [beta]
+  - name: workday
+    tenants: [gamma.wd5.GammaExternalCareerSite]   # slug.wdN.siteId
+  - name: agent-json            # postings collected elsewhere, by path
+    path: path/to/collected.json   # rows: source, source_id, title, company, url
+```
 
-A source that returns nothing, a registry row gone stale, a region with no board: name it in the header and hand it to `sources`.
+## Add a filter
+
+Define it in `.agents/search/filters.py`, then name it in `config.yaml`:
+
+```python
+def min_comp(posting): return posting.comp is None or (posting.comp.floor_value or 0) >= 200000
+```
+
+```yaml
+filters: [discipline, us_ca_remote]      # run early (cheap)
+post_enrichment_filters: [min_comp]      # run after comp; may read posting.comp
+```
+
+## Comp
+
+Cascade: stated salary → Levels.fyi → visa wages → "unknown" (still shown). `comp_floor` cuts only what's known to be below it.
+
+## State
+
+`.agents/search/` holds `config.yaml` and `filters.py` (yours) plus `seen.db` and `visa-wages/` (the pipeline's). Shortlists live in `shortlists/` — the newest file is the latest run.

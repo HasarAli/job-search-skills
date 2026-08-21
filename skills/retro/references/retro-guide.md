@@ -32,10 +32,10 @@ Then split every metric by segment: title, seniority, source board. A 0% respons
 
 | Symptom | Leak | Consider |
 |---|---|---|
-| Responses below ~1/50 | resume or targeting never survives the first skim | rewrite bullets against the mined keywords (`highlights`), then re-render (`resume`); revisit targets or seniority (`goals`); widen filters when volume is also low |
+| Responses below ~1/50 | resume or targeting never survives the first skim | rewrite bullets against the mined keywords (`highlights`), then re-render (`create-resume`); revisit targets or seniority (`goals`); widen filters when volume is also low |
 | Screens, no interviews | positioning or screen performance | sharpen the positioning story (`goals`); name the recurring screen questions from the debriefs in `interviews/` and hand them to `interview` |
 | Interviews, no offers | loop performance | diagnose the round below |
-| Ghosts concentrated in one source | board or channel quality | deprioritize that source (`sources`) |
+| Ghosts concentrated in one source | board or channel quality | deprioritize that source in `.agents/search/config.yaml` (`search`) |
 
 The ~1/50 mark opens a review, never a change: benchmarks move with industry, country, and market cycle. Present the numbers and the options; the user picks the one variable that changes.
 

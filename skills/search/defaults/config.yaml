@@ -1,0 +1,29 @@
+# User config — copied to .agents/search/config.yaml on first run, then yours.
+# This file states the entire run: what to search for, which sources to hit,
+# and which filters to apply. Sources not listed are not run.
+
+query:
+  roles: []            # REQUIRED, non-empty list of search terms
+  region: ""           # REQUIRED, non-empty string
+  remote: null         # true/false/null
+  posted_since_hours: null   # null = no freshness window
+
+sources:
+  - name: jobspy
+    site_names: [linkedin, indeed, glassdoor, zip_recruiter, google]
+    search_term: null          # per-role override; default = role
+  - name: wwr
+  - name: greenhouse
+    tenants: []                # company slugs
+  - name: ashby
+    tenants: []
+  - name: lever
+    tenants: []
+  - name: workday
+    tenants: []
+  - name: agent-json
+    path: ""                  # optional; overridden by CLI --json
+
+filters: []                    # names of predicates in filters.py, pre-enrich
+post_enrichment_filters: []    # names, post-enrich (may read posting.comp)
+comp_floor: null               # null = no floor

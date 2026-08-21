@@ -37,9 +37,10 @@ The user picks the changes. Each one goes to its owning skill, carrying the find
 | Adjustment | Owner |
 |---|---|
 | Bullet wording, missing keywords, weak metrics | `highlights` |
-| Which bullets ship, resume assembly, re-render | `resume` |
+| Which bullets ship, resume assembly, re-render | `create-resume` |
 | Role targets, seniority, comp, filters | `goals` |
-| Boards, ATS targets, channels, coverage | `sources` |
+| Boards, ATS targets, coverage | `search` |
+| Channel coverage, reply handling | `inbox` |
 | Headline, About, profile copy | `optimize-linkedin` |
 | Recurring screen questions, a failing round | `interview` |
 | Standing technical practice | `teach` |

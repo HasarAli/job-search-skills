@@ -1,5 +1,0 @@
-interface:
-  display_name: "Configure sources"
-  short_description: "Add or verify a job board, feed, or inbox channel"
-policy:
-  allow_implicit_invocation: false

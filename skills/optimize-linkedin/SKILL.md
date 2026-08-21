@@ -9,13 +9,13 @@ description: >-
   asks — "audit my LinkedIn", "optimize my profile", "rewrite my headline", "fix
   my About section", "should I turn on Open to Work", or why recruiters aren't
   finding them. This is an optional branch of the search, never a prerequisite
-  for one. Resume bullets and PDFs belong to `resume`; writing the bullets
+  for one. Resume bullets and PDFs belong to `create-resume`; writing the bullets
   themselves to `highlights`; answering recruiter messages to `inbox`.
 ---
 
 The user picks which recommendations ship, and every edit gets its own yes before the browser touches the live profile.
 
-**Prerequisites** — the `goals` and `resume` stages in `.agents/state.md` are both checked: a profile is positioned against decided role targets and a shipped resume, so an audit before either exists has nothing to score against. A missing stage hands off to the skill that owns it. The platform comes from `goals/search-filters.md`, LinkedIn by default. Browser tools work on the user's existing logged-in session; a logged-out session is a question for the user.
+**Prerequisites** — the `goals` and `create-resume` stages in `.agents/state.md` are both checked: a profile is positioned against decided role targets and a shipped resume, so an audit before either exists has nothing to score against. A missing stage hands off to the skill that owns it. The platform comes from `goals/search-filters.md`, LinkedIn by default. Browser tools work on the user's existing logged-in session; a logged-out session is a question for the user.
 
 Re-runnable by design: each run crawls fresh, so a second round after the user has applied their own manual items scores the profile as it now stands.
 

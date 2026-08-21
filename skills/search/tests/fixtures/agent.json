@@ -1,0 +1,68 @@
+[
+  {
+    "source": "greenhouse",
+    "source_id": "acme-001",
+    "title": "Software Engineer",
+    "company": "Acme",
+    "url": "https://example.com/acme-001",
+    "location": "Remote, United States",
+    "remote": true,
+    "posted_at": "2026-08-05T12:00:00+00:00",
+    "stated_comp": {"min": 150000, "max": 180000, "currency": "USD"}
+  },
+  {
+    "source": "greenhouse",
+    "source_id": "beta-002",
+    "title": "Data Scientist",
+    "company": "Beta",
+    "url": "https://example.com/beta-002",
+    "location": "Remote, London, United Kingdom",
+    "remote": true,
+    "posted_at": null,
+    "stated_comp": null
+  },
+  {
+    "source": "greenhouse",
+    "source_id": "gamma-003",
+    "title": "Product Manager",
+    "company": "Gamma",
+    "url": "https://example.com/gamma-003",
+    "location": "Berlin, Germany",
+    "remote": false,
+    "posted_at": "2026-08-04T12:00:00+00:00",
+    "stated_comp": null
+  },
+  {
+    "source": "greenhouse",
+    "source_id": "delta-004",
+    "title": "Engineering Manager",
+    "company": "Delta",
+    "url": "https://example.com/delta-004",
+    "location": "Remote, United States",
+    "remote": true,
+    "posted_at": "2026-08-03T12:00:00+00:00",
+    "stated_comp": {"min": 80000, "max": 90000, "currency": "USD"}
+  },
+  {
+    "source": "greenhouse",
+    "source_id": "staff-005",
+    "title": "Technical Recruiter",
+    "company": "Acme Staffing LLC",
+    "url": "https://example.com/staff-005",
+    "location": "Remote, United States",
+    "remote": true,
+    "posted_at": "2026-08-02T12:00:00+00:00",
+    "stated_comp": {"min": 120000, "max": 140000, "currency": "USD"}
+  },
+  {
+    "source": "greenhouse",
+    "source_id": "echo-006",
+    "title": "Frontend Engineer",
+    "company": "Echo",
+    "url": "https://example.com/echo-006",
+    "location": "Remote, United States",
+    "remote": true,
+    "posted_at": "2026-08-01T12:00:00+00:00",
+    "stated_comp": {"min": 250000, "max": 300000, "currency": "USD"}
+  }
+]

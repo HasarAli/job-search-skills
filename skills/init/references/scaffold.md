@@ -9,18 +9,14 @@ drop/                     raw material the user dumps; gitignored except the REA
   README.md               what to put here, and the public URLs for `intake`
 career/                   profile.md, career-diary.md, highlights.md
 goals/                    role-preferences.md, search-filters.md
-.agents/config/           conventions (written here); sources.json and channels.md, written by `sources`
-.agents/scripts/          custom board adapters, if `sources` ever writes one
-.agents/templates/        resume template + theme overrides, written by `resume`
+.agents/config/           channels.md, conventions
+.agents/search/           config.yaml, filters.py (search sources + filters)
+.agents/templates/        resume template + theme assets
 .agents/cache/            dedup keys and scrape output; gitignored
 .agents/state.md          stage machine
 ```
 
 `applications.csv`, `job-descriptions/`, `interviews/`, `shortlists/`, `resumes/`, and `linkedin/` are created by the skills that write into them.
-
-## `.agents/config/conventions/`
-
-Copy [conventions/country-conventions.md](conventions/country-conventions.md) and [conventions/industry-conventions.md](conventions/industry-conventions.md) verbatim. They are market lookup tables every later skill reads from `.agents/config/conventions/`, and the user's copy is the one that gets corrected when a **verify locally** row turns out to be wrong for their market.
 
 ## `.gitignore`
 
@@ -128,11 +124,9 @@ Skills read this first and update their stage on completion. Stages only — no 
 - [ ] init — repo scaffolded
 - [ ] intake — `career/profile.md`, `career/career-diary.md` populated
 - [ ] goals — targets → `goals/role-preferences.md`, filters → `goals/search-filters.md`
-- [ ] sources — boards, feeds, and channels configured under `.agents/config/`
 - [ ] highlights — XYZ bullets → `career/highlights.md`
-- [ ] resume — rendered → `resumes/`
+- [ ] create-resume — rendered → `resumes/`
 - [ ] optimize-linkedin — audited and optimized → `linkedin/`
-- [ ] search — shortlist running → `shortlists/`
 - [ ] apply — applications submitted and logged
 - [ ] inbox — channels swept
 - [ ] track — outcomes logged

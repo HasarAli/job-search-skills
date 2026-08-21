@@ -18,7 +18,7 @@ Ask one question at a time and wait. Trade-offs, defaults, and what in the profi
 
 ## 1. Identity and market → `goals/search-filters.md`
 
-Country or countries searched, industry, working language and application language, employment status and any confidentiality need. Record the dominant platform the country row names — `resume` and `optimize-linkedin` read their conventions out of this file. Which boards and channels to actually search belongs to `sources`.
+Country or countries searched, industry, working language and application language, employment status and any confidentiality need. Record the dominant platform the country row names — `create-resume` and `optimize-linkedin` read their conventions out of this file. Which boards and channels to actually search is configured in `.agents/search/config.yaml` (sources) and `.agents/config/channels.md` (inbox channels).
 
 Done when: the "Identity & logistics" section carries a value for each, dominant platform included.
 

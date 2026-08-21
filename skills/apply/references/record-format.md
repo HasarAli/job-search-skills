@@ -7,8 +7,8 @@ The record of an application is its row in `applications.csv`. The posting it wa
 Every file belonging to one application shares one **stem** — `<id>-<company>-<role>` — so the row, the posting, and the interview notes line up on sight:
 
 ```
-2026-07-28-01-acme_analytics-senior_software_engineer.md
-└── date ──┘ │ └── company ───┘ └────── role ──────────┘
+2026-07-28-01-acme_corp-senior_software_engineer.md
+└── date ──┘ │ └─ company ──┘ └────── role ──────────┘
              └─ which application that day
 ```
 

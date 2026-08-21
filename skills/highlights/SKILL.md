@@ -8,7 +8,7 @@ description: >-
   "work on my highlights", "I shipped something worth adding", or "my bullets
   are weak", and when `career/highlights.md` is missing or thin for a role.
   Choosing which bullets go on a resume and rendering the PDF belong to
-  `resume`; recording raw career facts belongs to `intake`.
+  `create-resume`; recording raw career facts belongs to `intake`.
 ---
 
 You mine and score; the user supplies the numbers and picks which rewrites ship — apply exactly what they select. Take every number as given.
