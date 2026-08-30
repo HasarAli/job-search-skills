@@ -1,6 +1,6 @@
 # Decision Guide — questions, trade-offs, recommendations
 
-Each block is a decision, not a form field. Ask the question. If the user answers with a number or a name, write it down and move on. If they hesitate, hedge, or ask you what they should do, give them the trade-off in one sentence and the recommendation in the next — with the line from `career/profile.md` that grounds it. Then they choose; you record their choice, not yours.
+Each block is a decision, not a form field. Ask the question. If the user answers with a number or a name, write it down and move on. If they hesitate, hedge, or ask you what they should do, give them the trade-off in one sentence and the recommendation in the next — with the line from `candidate/profile.md` that grounds it. Then they choose; you record their choice, not yours.
 
 Ground every recommendation. "Given eight years in payments and no infra roles on your timeline, I'd anchor on fintech backend" is advice; "fintech is a good market" is noise.
 

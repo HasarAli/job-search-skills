@@ -11,14 +11,14 @@ Every section of the snapshot report is scored against this file. The snapshot i
 
 > **A forward-looking landing page for one target role, written in the user's own voice.**
 
-A resume lists what happened; a profile sells what comes next. It is aimed at one reader — the recruiter searching for the target role in `goals/role-preferences.md` — and every section decision follows from what that reader should think and do.
+A resume lists what happened; a profile sells what comes next. It is aimed at one reader — the recruiter searching for the target role in `candidate/role-preferences.md` — and every section decision follows from what that reader should think and do.
 
 Voice:
 
 - First person, active, specific: "I rebuilt checkout for 2M daily users".
 - Name the work plainly — "I owned the migration" where "helped with", "just did some", "was lucky to" say nothing.
 - Short paragraphs and white space; a wall of text loses the reader before the pitch lands.
-- Numbers as proof, each one traceable to `career/profile.md` or `career/career-diary.md`.
+- Numbers as proof, each one traceable to `candidate/profile.md` or `candidate/career-diary.md`.
 
 Headline:
 
@@ -32,7 +32,7 @@ Score every section 1–5 on each lens. Each lens anchors 1, 3, and 5; a section
 
 ### Findability — the queries a recruiter types
 
-Write the searches a recruiter hiring for the target role would actually run (target titles from `goals/role-preferences.md`, location and work type from `goals/search-filters.md`), then judge the profile against them. Recruiter filters are literal: they match the exact terms typed, and a synonym the user "obviously" has does not count. Which fields feed the index on this platform: [platform-notes.md](platform-notes.md).
+Write the searches a recruiter hiring for the target role would actually run (target titles from `candidate/role-preferences.md`, location and work type from `candidate/search-filters.md`), then judge the profile against them. Recruiter filters are literal: they match the exact terms typed, and a synonym the user "obviously" has does not count. Which fields feed the index on this platform: [platform-notes.md](platform-notes.md).
 
 - **5** — the target title and its 3–5 top keywords appear verbatim in the indexed fields (headline, each experience title line, the skills list), the skills list is filled toward the platform cap with searchable skills, and location plus work-type fields match the filters.
 - **3** — the keywords live only in prose (About, experience descriptions) while the filterable fields carry a synonym or the official title alone.
@@ -54,11 +54,11 @@ Truncation check: cut the About after line two — a 5 still lands the pitch.
 
 A discrepancy between profile and resume is a screen-out, and an unbacked claim gets flagged, not polished.
 
-`career/profile.md` is the anchor; the shipped resume matching the target role and region in `goals/role-preferences.md` is the secondary check.
+`candidate/profile.md` is the anchor; the shipped resume matching the target role and region in `candidate/role-preferences.md` is the secondary check.
 
-- **5** — every title, employer, date, and metric matches `career/profile.md` and nothing contradicts that resume; each claim traces to a recorded line.
+- **5** — every title, employer, date, and metric matches `candidate/profile.md` and nothing contradicts that resume; each claim traces to a recorded line.
 - **3** — cosmetic drift: a role worded differently across profile and resume, a metric rounded one way here and another there.
-- **1** — a title, date, or number that contradicts `career/profile.md`, or a claim with no backing anywhere in `career/`.
+- **1** — a title, date, or number that contradicts `candidate/profile.md`, or a claim with no backing anywhere in `candidate/`.
 
 ## Section coverage
 

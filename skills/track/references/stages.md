@@ -2,6 +2,7 @@
 
 | Stage | Meaning |
 |---|---|
+| `draft` | application workspace exists, but nothing has been submitted |
 | `applied` | submitted, no human response yet — an automated confirmation email does not advance the stage |
 | `screen` | a human engaged: recruiter reply, screening call scheduled or done, assessment or take-home sent |
 | `interview-N` | Nth round with the hiring team (N = 1, 2, 3…). The recruiter screen stays `screen`; a panel or onsite counts as one round |
@@ -13,6 +14,7 @@
 
 ## Transitions
 
+- `draft → applied`
 - `applied → screen | rejected | ghosted`
 - `screen → interview-1 | rejected | ghosted`
 - `interview-N → interview-N+1 | offer | rejected | ghosted`

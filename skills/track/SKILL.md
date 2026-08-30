@@ -1,7 +1,7 @@
 ---
 name: track
 description: >-
-  Log one application event onto its row in `applications.csv`, then sweep for
+  Log one application event onto its row in `search/applications/index.csv`, then sweep for
   stale applications that need a nudge. Use when the user reports a recruiter
   reply, rejection, interview, or offer, when
   `inbox` hands over an application-status signal it read on a channel, or when
@@ -12,16 +12,16 @@ description: >-
 
 # Track — outcomes and follow-ups
 
-You log what is reported and propose everything else: the user sends every follow-up and confirms every ghost. A subagent may read `applications.csv`; facts from `career/` and `goals/` docs travel inline in the prompt you write.
+You log what is reported and propose everything else: the user sends every follow-up and confirms every ghost. A subagent may read `search/applications/index.csv`; facts from the candidate documents travel inline in the prompt you write.
 
-**Prerequisite** — read `applications.csv`. A missing CSV means nothing is tracked yet: hand off to `apply`.
+**Prerequisite** — read `search/applications/index.csv`. A missing CSV means nothing is tracked yet: hand off to `apply`.
 
 ## Files and settings
 
-- `applications.csv` — one row per application, and the whole record. Column contract: apply's [references/record-format.md](../apply/references/record-format.md).
-- `goals/search-filters.md` — `follow-up-days` (default 14), `retro-every` (default 50).
+- `search/applications/index.csv` — one row per application, and the whole record. Column contract: apply's [references/record-format.md](../apply/references/record-format.md).
+- `candidate/search-filters.md` — `follow-up-days` (default 14), `retro-every` (default 50).
 
-Stages: `applied → screen → interview-N → offer | rejected | ghosted`. Definitions, transitions, the event→stage map, and the ghost bar: [references/stages.md](references/stages.md).
+Stages: `draft → applied → screen → interview-N → offer | rejected | ghosted`. Definitions, transitions, the event→stage map, and the ghost bar: [references/stages.md](references/stages.md).
 
 ## 1. Log the event
 
@@ -40,7 +40,7 @@ Done when: the row's `status`, `last_activity`, `notes`, and `next_action` pair 
 
 Every invocation, once the user's request is handled.
 
-A row is stale when its stage is non-terminal and either its `next_action_date` has passed or `last_activity` is older than `follow-up-days`. List each: company, role, stage, the overdue `next_action`, days silent. Offer three moves per row — draft a nudge for the user to send, propose `ghosted` against the ghost bar in [references/stages.md](references/stages.md), or push the date out — then log whichever the user picks as an event (step 1).
+An applied-or-later row is stale when its stage is non-terminal and either its `next_action_date` has passed or `last_activity` is older than `follow-up-days`. Draft rows stay with `apply`: they need a submission decision, not an employer follow-up. List each stale row: company, role, stage, the overdue `next_action`, days silent. Offer three moves per row — draft a nudge for the user to send, propose `ghosted` against the ghost bar in [references/stages.md](references/stages.md), or push the date out — then log whichever the user picks as an event (step 1).
 
 Done when: every stale row carries the user's choice, and each nudge, ghost, and pushed date is on the row.
 
@@ -48,8 +48,6 @@ Done when: every stale row carries the user's choice, and each nudge, ghost, and
 
 Report the row you moved, the stale rows and their choices, and any learning the event carried.
 
-When the total application count crosses a multiple of `retro-every`, say so and offer `retro` — the analysis runs there, not here.
+When the submitted application count (excluding `draft`) crosses a multiple of `retro-every`, say so and offer `retro` — the analysis runs there, not here.
 
-Tracker writes are the audit trail: offer to commit `applications.csv`.
-
-Done when: the report is with the user, the retro offer is made if the count crossed, and the commit offer is with the user.
+Done when: the report is with the user and the retro offer is made if the count crossed.

@@ -8,7 +8,7 @@ Copy this into `.agents/templates/resume.yaml`, replace every `<...>` placeholde
 # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
 cv:
   name: <Full Name>
-  headline: <Target Role> · <Specialty>        # mirror goals/role-preferences.md positioning
+  headline: <Target Role> · <Specialty>        # mirror candidate/role-preferences.md positioning
   location: <City, Region>                     # granularity per region convention
   email: <email>
   phone: "<+E.164 number>"                     # quoted, E.164 only; omit if region omits phone
@@ -31,7 +31,7 @@ cv:
         location: <City or Remote>
         start_date: <YYYY-MM>
         end_date: present                      # or <YYYY-MM>
-        highlights:                            # the user's chosen bullets, in career/highlights.md order
+        highlights:                            # the user's chosen bullets, in candidate/highlights.md order
           - <Bullet 1 — XYZ format>
           - <Bullet 2>
       - company: <Earlier Company>
@@ -82,7 +82,7 @@ design:
 
 ## Per-region sections — include or omit
 
-Authoritative lookup: `.agents/config/conventions/country-conventions.md`, keyed by the regions in `goals/search-filters.md`. It decides, per region:
+Authoritative lookup: `.agents/config/conventions/country-conventions.md`, keyed by the regions in `candidate/search-filters.md`. It decides, per region:
 
 - **Photo** — customary in some markets, actively discouraged (bias-screening) in others. `# photo:` stays commented unless conventions say include.
 - **Personal details** — date of birth, nationality, marital status: some CV cultures expect them; most anglophone markets omit them entirely. Add as `custom_connections` entries only when required.

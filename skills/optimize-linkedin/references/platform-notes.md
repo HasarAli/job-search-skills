@@ -38,12 +38,12 @@ A manually curated showcase (posts, articles, links, documents) directly under A
 
 - Structure maps closely: headline, work experience, skills ("Fähigkeiten und Kenntnisse"), and a wants/offers pair ("Ich suche" / "Ich biete") that recruiters filter on — treat those two lists as LinkedIn's skills plus open-to-work targets combined.
 - Job-seeking status has its own recruiter-visibility toggle.
-- Profile language matters: recruiters search in the local working language, so align the profile with the working language in `goals/search-filters.md`.
+- Profile language matters: recruiters search in the local working language, so align the profile with the working language in `candidate/search-filters.md`.
 - UI labels shift with the account language — navigate by section semantics.
 
 ## Other platforms
 
-When `goals/search-filters.md` names a platform not covered above:
+When `candidate/search-filters.md` names a platform not covered above:
 
 1. Crawl by section semantics from [crawl-guide.md](crawl-guide.md) — headline-equivalent, summary, experience, skills, job-seeking settings — and record the platform's own names for them in the snapshot.
 2. Spend one web search on "how do recruiters search on <platform>" to learn which fields are filterable; those fields get headline-level attention in the findability lens.

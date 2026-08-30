@@ -6,7 +6,7 @@ Methods are named and standard. STAR, a stated design framework, and think-aloud
 
 ## STAR — the behavioural method
 
-**S**ituation (one line of context) → **T**ask (what the user owned) → **A**ction (what *they* did, first person, the bulk of the answer) → **R**esult (the outcome, with a number where `career/profile.md` has one).
+**S**ituation (one line of context) → **T**ask (what the user owned) → **A**ction (what *they* did, first person, the bulk of the answer) → **R**esult (the outcome, with a number where `candidate/profile.md` has one).
 
 Two minutes spoken. "We" in the Action section is the most common failure: it hides which part was theirs.
 
@@ -21,7 +21,7 @@ Two minutes spoken. "We" in the Action section is the most common failure: it hi
 - Comp expectations, notice period, location and remote setup, work authorization.
 - Anything on the resume that reads as a jump, a gap, or a title mismatch.
 
-**Method:** a 90-second narrative — current role, the through-line of the last two moves, why this role is the next one. Comp answers come from `goals/search-filters.md`, stated as a band with the floor at the bottom.
+**Method:** a 90-second narrative — current role, the through-line of the last two moves, why this role is the next one. Comp answers come from `candidate/search-filters.md`, stated as a band with the floor at the bottom.
 
 **Bar:** no jargon a recruiter cannot repeat to the hiring manager; the comp number stated without hedging; a reason for leaving that is about what they are going toward.
 
@@ -53,7 +53,7 @@ Two minutes spoken. "We" in the Action section is the most common failure: it hi
 
 ## System design
 
-**Tests:** whether the user can hold a whole system, size it, and defend the trade-offs — the growth area named in `goals/role-preferences.md`.
+**Tests:** whether the user can hold a whole system, size it, and defend the trade-offs — the growth area named in `candidate/role-preferences.md`.
 
 **Question set:** design a well-known product surface (feed, chat, upload and serve media, rate limiter, notification fan-out), then a deep dive the interviewer picks. Frontend-leaning loops ask for component architecture, state ownership, caching, and rendering strategy on the same footing.
 
@@ -96,6 +96,6 @@ Two minutes spoken. "We" in the Action section is the most common failure: it hi
 - Comp, competing processes, and start date.
 - Their questions for the company, which carry real weight in this round.
 
-**Method:** direct answers, no rehearsed narrative. Comp comes from `goals/search-filters.md`, competing processes stated as a timeline rather than a name.
+**Method:** direct answers, no rehearsed narrative. Comp comes from `candidate/search-filters.md`, competing processes stated as a timeline rather than a name.
 
 **Bar:** the user states a floor without apologizing for it, and asks at least one question that only someone who wants the job would ask.

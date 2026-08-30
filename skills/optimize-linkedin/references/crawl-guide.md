@@ -34,7 +34,7 @@ Also capture platform-surfaced meta where visible: profile completeness meter, "
 
 ## Snapshot report structure
 
-Write to `<platform>/<YYYY-MM-DD>-snapshot.md`, e.g. `linkedin/2026-07-09-snapshot.md`:
+Write to `candidate/<platform>/<YYYY-MM-DD>-snapshot.md`, e.g. `candidate/linkedin/2026-07-09-snapshot.md`:
 
 ```markdown
 # Profile snapshot — <platform> — YYYY-MM-DD

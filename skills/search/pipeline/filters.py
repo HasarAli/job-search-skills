@@ -55,6 +55,10 @@ class _Region(_Builtin):
     name = "region"
 
     def __call__(self, posting: Posting, region: str) -> bool:
+        # ``remote`` is a search mode, not a literal location. The separate
+        # remote predicate validates the posting's remote flag.
+        if region.strip().casefold() == "remote":
+            return True
         if posting.location is None:
             return True
         return region.casefold() in posting.location.casefold()

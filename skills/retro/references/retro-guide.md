@@ -2,11 +2,11 @@
 
 ## Delegate the crunching
 
-One subagent, so the main context stays small. It reads `applications.csv` and the job descriptions in `job-descriptions/`, and returns the metrics below, the mined title/keyword/seniority lists, and any anomaly it hit. Comparing those lists against `goals/role-preferences.md` and `career/highlights.md` happens in the main session.
+One subagent, so the main context stays small. It reads `search/applications/index.csv` and each `search/applications/<stem>/job-description.md`, and returns the metrics below, the mined title/keyword/seniority lists, and any anomaly it hit. Comparing those lists against `candidate/role-preferences.md` and `candidate/highlights.md` happens in the main session.
 
 ## Metrics
 
-Compute each over the whole history and over the last `retro-every` applications — the recent batch shows whether things are improving.
+Exclude rows whose current status is `draft`. Compute each metric over the whole submitted history and over the last `retro-every` submitted applications — the recent batch shows whether things are improving.
 
 | Metric | Formula |
 |---|---|
@@ -24,16 +24,16 @@ Then split every metric by segment: title, seniority, source board. A 0% respons
 
 | Dimension | The question it settles |
 |---|---|
-| Titles | do the titles applied to match the target list in `goals/role-preferences.md`? |
-| Keywords | do the recurring required skills appear in the shipped resume and `career/highlights.md`? |
-| Seniority | is the user applying above, at, or below the positioning in `goals/role-preferences.md`? |
+| Titles | do the titles applied to match the target list in `candidate/role-preferences.md`? |
+| Keywords | do the recurring required skills appear in the shipped resume and `candidate/highlights.md`? |
+| Seniority | is the user applying above, at, or below the positioning in `candidate/role-preferences.md`? |
 
 ## The leak table
 
 | Symptom | Leak | Consider |
 |---|---|---|
 | Responses below ~1/50 | resume or targeting never survives the first skim | rewrite bullets against the mined keywords (`highlights`), then re-render (`create-resume`); revisit targets or seniority (`goals`); widen filters when volume is also low |
-| Screens, no interviews | positioning or screen performance | sharpen the positioning story (`goals`); name the recurring screen questions from the debriefs in `interviews/` and hand them to `interview` |
+| Screens, no interviews | positioning or screen performance | sharpen the positioning story (`goals`); name recurring screen questions from application-local `interview.md` files and hand them to `interview` |
 | Interviews, no offers | loop performance | diagnose the round below |
 | Ghosts concentrated in one source | board or channel quality | deprioritize that source in `.agents/search/config.yaml` (`search`) |
 
@@ -41,14 +41,14 @@ The ~1/50 mark opens a review, never a change: benchmarks move with industry, co
 
 ## Diagnosing a failing loop
 
-Name the round that fails from the debriefs in `interviews/<stem>.md` and the `notes` on each row, then hand the remedy to its owning skill. Every candidate fact a remedy leans on traces to a line in `career/profile.md` or `career/career-diary.md`; where the source is silent, getting it from the user comes first.
+Name the round that fails from `search/applications/<stem>/interview.md` and the `notes` on each row, then hand the remedy to its owning skill. Every candidate fact a remedy leans on traces to a line in `candidate/profile.md` or `candidate/career-diary.md`; where the source is silent, getting it from the user comes first.
 
 | Round | Signature in the notes | Remedy | Owner |
 |---|---|---|---|
 | Coding / technical screen | ran out of time, missed edge cases, silent while solving | timed practice at medium difficulty, solved out loud | `teach` |
 | System design | interviewer drove, breadth without depth, requirements and trade-offs never stated | one system per week end-to-end: requirements → constraints → trade-offs → a deep dive on the hard part | `teach` |
-| Behavioral | "we" instead of "I", no real conflict or stakes, story stops before the outcome | rewrite the three weakest STAR stories from the raw notes in `career/career-diary.md` — own actions, real conflict, measured outcome. With no story bank in `career/profile.md` yet, building one with the user comes first | `highlights` |
-| Final / hiring manager | verdict came back as a down-level, or the conversation stalled on comp | recalibrate the target level, and rehearse the base-comp floor from `goals/search-filters.md` as the opening number | `goals` |
+| Behavioral | "we" instead of "I", no real conflict or stakes, story stops before the outcome | rewrite the three weakest STAR stories from the raw notes in `candidate/career-diary.md` — own actions, real conflict, measured outcome. With no story bank in `candidate/profile.md` yet, building one with the user comes first | `highlights` |
+| Final / hiring manager | verdict came back as a down-level, or the conversation stalled on comp | recalibrate the target level, and rehearse the base-comp floor from `candidate/search-filters.md` as the opening number | `goals` |
 
 ## The noise floor
 

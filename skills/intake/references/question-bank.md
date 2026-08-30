@@ -1,6 +1,6 @@
 # Question Bank — facts and history
 
-One question per message, wait for the answer, probe once, move on. What a document in `drop/` already answered, ask as a confirmation: "your 2021 resume says you led a team of 4 at Acme — still accurate?" On a refresh, ask only what the profile is missing or what a new source contradicts.
+One question per message, wait for the answer, probe once, move on. What a document in `info-drop-zone/` already answered, ask as a confirmation: "your 2021 resume says you led a team of 4 at Acme — still accurate?" On a refresh, ask only what the profile is missing or what a new source contradicts.
 
 Achievements and their numbers belong to `highlights`; ask here only for what a role *was*, not for its wins.
 
@@ -44,4 +44,4 @@ Two or three, each one a situation the user can tell in two minutes:
 - A time you led without the authority to, or carried something nobody owned?
 - The hardest technical or professional problem you have solved?
 
-Capture the story as they tell it, in `career/career-diary.md`, and the one-line handle in `career/profile.md`.
+Capture the story as they tell it, in `candidate/career-diary.md`, and the one-line handle in `candidate/profile.md`.

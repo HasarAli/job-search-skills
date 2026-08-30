@@ -45,6 +45,7 @@ def test_freshness(posted_at, since, expected):
         ("San Francisco, CA", "san francisco", True),
         ("SAN FRANCISCO, CA", "san francisco", True),     # case-insensitive
         ("New York, NY", "san francisco", False),
+        ("United States", "remote", True),                # search mode, not location
     ],
 )
 def test_region(location, region_name, expected):

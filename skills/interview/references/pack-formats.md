@@ -1,6 +1,6 @@
 # Prep Pack and Debrief Formats
 
-One file per application, `interviews/<stem>.md` — the same stem the row and the posting carry, defined in apply's [record-format.md](../../apply/references/record-format.md) — holding the rounds in the order they happened: `## Round N — prep` written before the round, `## Round N — debrief` after it. A new round appends its prep section to the bottom.
+One file per application, `search/applications/<stem>/interview.md` — the stem is defined in apply's [record-format.md](../../apply/references/record-format.md) — holding the rounds in the order they happened: `## Round N — prep` written before the round, `## Round N — debrief` after it. A new round appends its prep section to the bottom.
 
 The file opens with the header block, written once on the first round:
 
@@ -29,7 +29,7 @@ about the stack and how they work. Facts only — no adjectives.>
 
 ### Role brief
 
-<What this role demands beyond `job-descriptions/<stem>.md`: the team it sits on, who it reports
+<What this role demands beyond the application directory's `job-description.md`: the team it sits on, who it reports
 to, what the stated requirements imply about the first six months.>
 
 ### Question set
@@ -38,7 +38,7 @@ to, what the stated requirements imply about the first six months.>
 
 #### <the question, as an interviewer would ask it>
 
-**Story:** <which story from `career/profile.md`, told as STAR — Situation, Task,
+**Story:** <which story from `candidate/profile.md`, told as STAR — Situation, Task,
 Action, Result, with the number the profile records.>
 >
 
@@ -51,7 +51,7 @@ This is the list the user rehearses. A gap that names a real capability gap is a
 
 ### Questions for the interviewer
 
-<What the user still needs to learn to judge an offer, drawn from `goals/`. One
+<What the user still needs to learn to judge an offer, drawn from `candidate/`. One
 bullet each: the question, and the filter or preference it settles.>
 ```
 
@@ -89,7 +89,7 @@ company fact nobody could have known.>
 
 ### Learned about the role
 
-<Team, stack, scope, comp, process, timeline — anything `job-descriptions/<stem>.md` did not say.
+<Team, stack, scope, comp, process, timeline — anything `job-description.md` did not say.
 What changes the user's read on the offer goes to `goals`.>
 
 ### Read on next steps
@@ -99,6 +99,6 @@ and by when. This is what `track` turns into the row's `next_action`.>
 
 ### Routed
 
-<One line per item from the debrief and where it went: `teach`, `career/career-diary.md`
+<One line per item from the debrief and where it went: `teach`, `candidate/career-diary.md`
 plus `highlights`, `goals`, or declined by the user.>
 ```

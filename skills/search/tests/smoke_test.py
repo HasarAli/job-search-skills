@@ -21,6 +21,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -55,7 +56,7 @@ query:
   posted_since_hours: null
 sources:
   - name: agent-json
-    path: "{fixture_path}"
+    path: {json.dumps(str(fixture_path))}
 filters:
   - not_agency
 post_enrichment_filters:
@@ -93,10 +94,10 @@ def main() -> int:
 
         assert envelope["schema_version"] == 1, envelope["schema_version"]
         assert envelope["counts"] == {
-            # gamma-003 (Berlin, remote:false) is cut at collection by the
-            # region pushdown, so it never enters the pipeline.
-            "collected": 5,
-            "unseen": 5,
+            # Agent JSON is ingested before the region constraint is applied,
+            # so gamma-003 is counted here and cut later in the pipeline.
+            "collected": 6,
+            "unseen": 6,
             "filtered": 3,   # not_agency + comp_floor + drops_high_salary
             "enriched": 4,   # every cheap-filter survivor gets posting.comp set
             "emitted": 2,
@@ -116,7 +117,7 @@ def main() -> int:
 
         # The ledger recorded the three eliminations + two shortlists in one
         # atomic write.
-        with sqlite3.connect(str(home / "seen.db")) as conn:
+        with closing(sqlite3.connect(str(home / "seen.db"))) as conn:
             by_outcome = dict(
                 conn.execute(
                     "SELECT outcome, COUNT(*) FROM sightings GROUP BY outcome"
@@ -154,7 +155,7 @@ def main() -> int:
   posted_since_hours: 24
 sources:
   - name: agent-json
-    path: "{stale_fixture}"
+    path: {json.dumps(str(stale_fixture))}
 filters: []
 post_enrichment_filters: []
 comp_floor: null

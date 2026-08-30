@@ -39,5 +39,5 @@ Top-level headers (`# Eligibility`, `# Compensation`, `# Motivation`) group a ba
 
 ## Rules
 
-- Answers carrying facts about the user trace to `career/profile.md` or `career/career-diary.md`.
-- An answer the user supplies is appended as given — the user is the source of truth about themselves. When it carries a durable new fact, suggest adding it to `career/profile.md` and leave the call to them.
+- Answers carrying facts about the user trace to `candidate/profile.md` or `candidate/career-diary.md`.
+- An answer the user supplies is appended as given — the user is the source of truth about themselves. When it carries a durable new fact, suggest adding it to `candidate/profile.md` and leave the call to them.

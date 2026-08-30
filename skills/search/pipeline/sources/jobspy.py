@@ -105,11 +105,37 @@ class JobSpyAdapter(BaseAdapter):
             if hours:
                 kwargs["hours_old"] = hours
 
-        df = retry_call(
-            lambda: jobspy.scrape_jobs(**kwargs),
-            retries=DEFAULT_RETRIES,
-            backoff=DEFAULT_BACKOFF,
-        )
+        # JobSpy's LinkedIn parser raises when a card contains a country that
+        # its enum does not know (for example Lesotho or Kazakhstan).  One
+        # malformed card should not discard the whole board scrape; its
+        # Location model accepts a plain string just fine.
+        country_type = None
+        original_country_parser = None
+        if site.lower() == "linkedin":
+            from jobspy.model import Country
+
+            country_type = Country
+            original_country_parser = Country.from_string.__func__
+
+            def tolerant_country_parser(country_str: str) -> Any:
+                try:
+                    return original_country_parser(Country, country_str)
+                except ValueError as exc:
+                    if "Invalid country string" not in str(exc):
+                        raise
+                    return country_str.strip()
+
+            Country.from_string = classmethod(lambda cls, value: tolerant_country_parser(value))
+
+        try:
+            df = retry_call(
+                lambda: jobspy.scrape_jobs(**kwargs),
+                retries=DEFAULT_RETRIES,
+                backoff=DEFAULT_BACKOFF,
+            )
+        finally:
+            if country_type is not None and original_country_parser is not None:
+                country_type.from_string = classmethod(original_country_parser)
         if df is None:
             return []
         return df.to_dict("records")

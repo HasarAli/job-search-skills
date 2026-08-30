@@ -9,7 +9,7 @@ The user has asked you to teach them something. This is a stateful request - the
 
 ## Teaching Workspace
 
-Treat `teach/<topic-slug>/` as the teaching workspace — one directory per topic, created on first use. Ask the user which topic directory to work in when it is ambiguous, and never write these files to the repository root.
+Treat `development/<topic-slug>/` as the teaching workspace — one directory per topic, created on first use. Ask the user which topic directory to work in when it is ambiguous, and never write these files to the repository root.
 
 <!-- Repo-local scoping. Upstream treats the current
      directory as the workspace; here that would scatter MISSION.md, lessons/,

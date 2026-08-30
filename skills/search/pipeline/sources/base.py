@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import email.utils
 import time
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time as datetime_time, timezone
 from typing import Any, Protocol
 
 from pipeline.model import Failure, Posting, Query
@@ -125,7 +125,7 @@ def coerce_datetime(value: Any) -> datetime | None:
     if isinstance(value, datetime):
         dt = value
     elif isinstance(value, date):
-        dt = datetime.combine(value, time.min)
+        dt = datetime.combine(value, datetime_time.min)
     elif isinstance(value, str):
         s = value.strip()
         if not s:
@@ -158,6 +158,10 @@ def matches_region(posting: Posting, region: str) -> bool:
     """Keep if ``location`` contains the region (case-insensitive substring);
     missing location passes."""
     if not region:
+        return True
+    # ``remote`` is a search mode, not a literal geographic label.  The
+    # remote constraint is handled independently by ``matches_remote``.
+    if region.strip().lower() == "remote":
         return True
     location = posting.location
     if location is None or not str(location).strip():

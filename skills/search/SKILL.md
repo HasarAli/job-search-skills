@@ -18,7 +18,7 @@ Exit codes: `0` shortlist produced · `1` nothing collected · `2` config error 
 
 ## Render the shortlist
 
-Read the JSON on stdout, write `shortlists/<YYYY-MM-DD-HHMMSS>.md`:
+Read the JSON on stdout, write `search/shortlists/<YYYY-MM-DD-HHMMSS>.md`:
 
 ```markdown
 # Shortlist — YYYY-MM-DD
@@ -47,11 +47,11 @@ Append a block to `.agents/search/config.yaml` → `sources:`. Not listed = not 
 
 ```yaml
   - name: greenhouse            # ATS tenant: company slug
-    tenants: [acme, globex]
+    tenants: [stripe, databricks]
   - name: ashby
-    tenants: [beta]
+    tenants: [ramp]
   - name: workday
-    tenants: [gamma.wd5.GammaExternalCareerSite]   # slug.wdN.siteId
+    tenants: [nvidia.wd5.NVIDIAExternalCareerSite]   # slug.wdN.siteId
   - name: agent-json            # postings collected elsewhere, by path
     path: path/to/collected.json   # rows: source, source_id, title, company, url
 ```
@@ -75,4 +75,4 @@ Cascade: stated salary → Levels.fyi → visa wages → "unknown" (still shown)
 
 ## State
 
-`.agents/search/` holds `config.yaml` and `filters.py` (yours) plus `seen.db` and `visa-wages/` (the pipeline's). Shortlists live in `shortlists/` — the newest file is the latest run.
+`.agents/search/` holds `config.yaml` and `filters.py` (yours) plus `seen.db` and `visa-wages/` (the pipeline's). Shortlists live in `search/shortlists/` — the newest file is the latest run.

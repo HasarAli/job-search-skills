@@ -1,6 +1,6 @@
 # Bullet rubric — the standard, the three lenses, the rewrite
 
-Every bullet in `career/highlights.md`, every resume highlight, and every rewrite is written and scored against this file.
+Every bullet in `candidate/highlights.md`, every resume highlight, and every rewrite is written and scored against this file.
 
 - [The standard](#the-standard) — what a shippable bullet looks like
 - [The three lenses](#the-three-lenses) — skim, level, tier, with score anchors
@@ -32,7 +32,7 @@ Voice:
 
 ## The three lenses
 
-Score every bullet 1–5 on each lens. Each lens anchors 1, 3, and 5; a bullet sitting between two anchors takes the 2 or 4 between them. The target level and tier come from the target's positioning in `goals/role-preferences.md`, plus company type and stage in `goals/search-filters.md`.
+Score every bullet 1–5 on each lens. Each lens anchors 1, 3, and 5; a bullet sitting between two anchors takes the 2 or 4 between them. The target level and tier come from the target's positioning in `candidate/role-preferences.md`, plus company type and stage in `candidate/search-filters.md`.
 
 ### Skim — the recruiter's ten seconds
 

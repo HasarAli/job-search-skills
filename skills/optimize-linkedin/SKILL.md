@@ -15,13 +15,13 @@ description: >-
 
 The user picks which recommendations ship, and every edit gets its own yes before the browser touches the live profile.
 
-**Prerequisites** — the `goals` and `create-resume` stages in `.agents/state.md` are both checked: a profile is positioned against decided role targets and a shipped resume, so an audit before either exists has nothing to score against. A missing stage hands off to the skill that owns it. The platform comes from `goals/search-filters.md`, LinkedIn by default. Browser tools work on the user's existing logged-in session; a logged-out session is a question for the user.
+**Prerequisites** — the `goals` and `create-resume` stages in `.agents/state.md` are both checked: a profile is positioned against decided role targets and a shipped resume, so an audit before either exists has nothing to score against. A missing stage hands off to the skill that owns it. The platform comes from `candidate/search-filters.md`, LinkedIn by default. Browser tools work on the user's existing logged-in session; a logged-out session is a question for the user.
 
 Re-runnable by design: each run crawls fresh, so a second round after the user has applied their own manual items scores the profile as it now stands.
 
 ## 1. Crawl (subagent)
 
-Spawn one subagent to crawl the profile with browser tools and write the snapshot to `<platform>/<YYYY-MM-DD>-snapshot.md` (e.g. `linkedin/2026-07-09-snapshot.md`). Sections to capture, report format, and crawl conduct: [references/crawl-guide.md](references/crawl-guide.md). Relay the platform and profile URL inline in its prompt; `career/` docs stay in the main session. It returns the report path plus a 3–5 line summary, so the raw crawl stays out of the main session.
+Spawn one subagent to crawl the profile with browser tools and write the snapshot to `candidate/<platform>/<YYYY-MM-DD>-snapshot.md` (e.g. `candidate/linkedin/2026-07-09-snapshot.md`). Sections to capture, report format, and crawl conduct: [references/crawl-guide.md](references/crawl-guide.md). Relay the platform and profile URL inline in its prompt; the other candidate documents stay in the main session. It returns the report path plus a 3–5 line summary, so the raw crawl stays out of the main session.
 
 Done when: the report exists at the dated path and every row of the crawl guide's section table appears in it, verbatim text or marked missing.
 
@@ -33,7 +33,7 @@ Done when: every section in the snapshot carries three scores plus either one re
 
 ## 3. The user picks what ships
 
-Present one numbered list grouped by section, in the order [references/review-rubric.md](references/review-rubric.md) sets, each item showing current text → proposed text and the lens that motivated it. The user picks by number, all, or none. A rewrite that needs a fact nobody recorded earns one question at a time, and the answer appends to `career/career-diary.md`.
+Present one numbered list grouped by section, in the order [references/review-rubric.md](references/review-rubric.md) sets, each item showing current text → proposed text and the lens that motivated it. The user picks by number, all, or none. A rewrite that needs a fact nobody recorded earns one question at a time, and the answer appends to `candidate/career-diary.md`.
 
 Done when: every numbered item carries a verdict — apply or skip.
 
@@ -47,6 +47,6 @@ Done when: every picked item is saved-and-verified, declined at its own confirma
 
 ## 5. Report and record
 
-Report applied edits, declined items, and the manual tasks the user owns — photo, cover image, anything the platform will not let a browser session change. Everything not applied lands as a checklist in `<platform>/optimization-plan.md` (e.g. `linkedin/optimization-plan.md`); the report names it and says a second round scores the profile again once those items are done. Check off the `optimize-linkedin` stage in `.agents/state.md`, then commit the snapshot and the plan.
+Report applied edits, declined items, and the manual tasks the user owns — photo, cover image, anything the platform will not let a browser session change. Everything not applied lands as a checklist in `candidate/<platform>/optimization-plan.md` (e.g. `candidate/linkedin/optimization-plan.md`); the report names it and says a second round scores the profile again once those items are done. Check off the `optimize-linkedin` stage in `.agents/state.md`.
 
-Done when: every unapplied item appears in the optimization plan, the plan and snapshot are committed, and the `optimize-linkedin` stage is checked off in `.agents/state.md`.
+Done when: every unapplied item appears in the optimization plan and the `optimize-linkedin` stage is checked off in `.agents/state.md`.

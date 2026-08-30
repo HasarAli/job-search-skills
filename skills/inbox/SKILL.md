@@ -13,7 +13,7 @@ description: >-
 
 Inbound only. You read, score, and recommend; the user sends every reply.
 
-**Prerequisites** — `.agents/state.md` for the last sweep date. A missing `goals/search-filters.md` hands off to `goals`.
+**Prerequisites** — `.agents/state.md` for the last sweep date. A missing `candidate/search-filters.md` hands off to `goals`.
 
 **Channels** — read `.agents/config/channels.md`: one `##` section per configured channel, holding its entry URL, how to open a thread, how to extract a body, and what to skip. Those sections are the channel list. A platform the user names with no section there gets onboarded by `inbox` first.
 
@@ -33,7 +33,7 @@ Done when: every swept channel has been followed to its cut-off date, and each c
 
 ## 2. Triage
 
-Score every thread against `goals/search-filters.md` and `goals/role-preferences.md`, naming the filter it clears or breaks. Overrides are the user's call, so a thread that breaks one still reaches the report, gap stated.
+Score every thread against `candidate/search-filters.md` and `candidate/role-preferences.md`, naming the filter it clears or breaks. Overrides are the user's call, so a thread that breaks one still reaches the report, gap stated.
 
 Low signal: the client company withheld, an email address or phone number asked for before any JD, an account that cannot receive replies. Contact details are the user's to give — relay the request, never the data.
 
@@ -47,9 +47,9 @@ One report across all channels. Sections in order:
 2. **Needs a decision** — awaiting the user's reply. One line each: the filter verdict, then your recommendation.
 3. **Filter mismatches** — live threads breaking a stated filter. Name the filter and the gap once.
 
-Then one line each for threads correctly closed, and for threads silent past the follow-up cadence in `goals/search-filters.md` — dead, or due a nudge.
+Then one line each for threads correctly closed, and for threads silent past the follow-up cadence in `candidate/search-filters.md` — dead, or due a nudge.
 
-Scheduling detail is the highest-value output: date, time in the user's own timezone (region in `goals/search-filters.md`), who calls whom on what number, and whether the invitation is still unanswered.
+Scheduling detail is the highest-value output: date, time in the user's own timezone (region in `candidate/search-filters.md`), who calls whom on what number, and whether the invitation is still unanswered.
 
 Drafting a reply on request is welcome. Sending, replying, and answering an invitation are the user's own clicks.
 
@@ -57,7 +57,7 @@ Done when: every triaged thread sits in exactly one section, and every scheduled
 
 ## 4. Hand off
 
-- Inbound role absent from `applications.csv` → `apply` logs it; inbound belongs in the tracker too.
+- Inbound role absent from `search/applications/index.csv` → `apply` logs it; inbound belongs in the tracker too.
 - A recruiter reply, rejection, interview invitation, or outcome on a tracked application → `track` logs it as an event, carrying the thread's own wording; the next action this report names for that thread is what lands on the row.
 
 Done when: the `inbox` stage in `.agents/state.md` records today's sweep date and the channels swept, and each hand-off above has been taken or named to the user.

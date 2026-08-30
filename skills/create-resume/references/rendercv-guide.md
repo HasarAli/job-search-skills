@@ -13,11 +13,11 @@ Pin it in the data repo's root `requirements.txt` as `rendercv[full]` so renders
 
 ## Render command
 
-`-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, so bare basenames land beside it — one directory and one basename (`<base>` = `<Name>-<role-slug>-<region>`) for the source and all its renders:
+`-pdf`/`-png`/`-md`/`-typ` resolve **relative to the input YAML**, so bare basenames land beside it. Base resumes use `search/resumes/<role-slug>/<region>/`; tailored resumes use `search/applications/<stem>/`. Both use `<First>_<Last>_<Target_Role>_Resume` as the basename:
 
 ```bash
-DIR="resumes/$(date +%F)"                 # local date → directory
-BASE="<Name>-<role-slug>-<region>"
+DIR="search/resumes/<role-slug>/<region>"        # or search/applications/<stem>
+BASE="<First>_<Last>_<Target_Role>_Resume"
 PYTHONIOENCODING=utf-8 rendercv render "$DIR/$BASE.yaml" \
   -pdf "$BASE.pdf" -png "$BASE.png" -md "$BASE.md" \
   -typ discard.typ -nohtml
@@ -63,14 +63,14 @@ Region conventions (paper size `us-letter` vs `a4`, photo, page count) come from
 - **Quote any string containing a colon** — the most common invalid-YAML cause: `title: "Results: A Study"`.
 - Inline Markdown only (`**bold**`, `*italic*`, `[text](url)`); no headers/lists inside values.
 - `date` and `start_date`/`end_date` are mutually exclusive. `start_date`/`end_date` need strict `YYYY-MM-DD`/`YYYY-MM`/`YYYY`; `end_date` omitted = `present`. `date` is free-form (`"Fall 2023"`).
-- Phone must be E.164 (`"+15551234567"`), copied from `career/profile.md`.
+- Phone must be E.164 (`"+15551234567"`), copied from `candidate/profile.md`.
 - Nested highlights: indent a sub-item two spaces under its parent line within the same string.
 - Editor autocompletion: put this on line 1 of every YAML:
   `# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json`
 
 ## Locales
 
-`--locale LOCALE` on `rendercv new`, or set `locale.language` in the YAML. ~20 built-ins (french, german, spanish, japanese, ...); override individual `locale` fields for custom month names/phrases. Pick per `goals/search-filters.md` working language.
+`--locale LOCALE` on `rendercv new`, or set `locale.language` in the YAML. ~20 built-ins (french, german, spanish, japanese, ...); override individual `locale` fields for custom month names/phrases. Pick per `candidate/search-filters.md` working language.
 
 ## Troubleshooting
 
