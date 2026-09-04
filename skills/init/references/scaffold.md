@@ -13,31 +13,13 @@ search/
 development/                 one teaching workspace per topic
 info-drop-zone/              raw material; gitignored except README.md
 .agents/config/              channels, autofill, Q&A bank, conventions
-.agents/search/
-  config.yaml               configured sources and search settings
-  filters.py                candidate-specific search predicates
-  shortlist-format.md       shared shortlist naming, metadata, and layout
-  lib/search_shared/        shared Posting types and Ledger implementation
-  seen.db                   generated shared dedup ledger; gitignored
-  visa-wages/               generated salary data; gitignored
-.agents/skills/
-  browser-search-linkedin/  rendered LinkedIn results search
-  script-search/            configured-source search pipeline
-  ...                       other repository skills
+.agents/search/              search source configuration and regenerable state
 .agents/templates/           canonical resume template and theme assets
 .agents/cache/               regenerable agent data; gitignored
 .agents/state.md             stage machine
 ```
 
 `search/applications/index.csv`, application directories, base-role resume directories, shortlists, `candidate/<platform>/`, and topic directories under `development/` are created by the skills that write into them.
-
-The search skills and shared library/format are shipped repository resources,
-not empty seed files. Preserve them in an existing project; when scaffolding a
-new project, copy them from this repository. Both search skills use
-`.agents/search/shortlist-format.md` and `lib/search_shared/`; neither reaches
-into the other skill. Shortlists use `YYYY-MM-DD-HHMMSS.md` in America/Toronto,
-with collision suffixes as defined in the shared format. The ledger and salary
-cache are created on use, not copied from another candidate's project.
 
 ## `.gitignore`
 
@@ -77,7 +59,7 @@ search/applications/**/*_Resume.md
 search/applications/**/*_Resume.html
 search/applications/**/*.typ
 
-# Each search run creates a new timestamped shortlist
+# Daily shortlists regenerate on each run
 search/shortlists/
 
 # Pipeline state that regenerates

@@ -1,6 +1,6 @@
 # Shared shortlist format
 
-Both `script-search` and `browser-search-linkedin` write
+Both Search modes — script and browser LinkedIn — write
 `search/shortlists/YYYY-MM-DD-HHMMSS.md`, using run start time in
 America/Toronto. Never overwrite: append `-01`, `-02`, etc. on collision.
 One file per run, including empty/partial runs; never append to an older run.

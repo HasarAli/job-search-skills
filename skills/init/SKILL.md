@@ -25,7 +25,7 @@ Done when: `git rev-parse --git-dir` succeeds, or the run has stopped on the ins
 
 ## 2. Build the tree
 
-Create every directory in the scaffold's tree, then write each file it lists that does not already exist: `.gitignore`, `.gitattributes`, `README.md`, `info-drop-zone/README.md`, `.agents/state.md`. Also copy the shipped `.agents/search/shortlist-format.md` and `.agents/search/lib/search_shared/` resources if absent; they are shared engine resources, not user-owned seeds. A file already on disk keeps its current contents — report it as skipped.
+Create every directory in the scaffold's tree, then write each file it lists that does not already exist: `.gitignore`, `.gitattributes`, `README.md`, `info-drop-zone/README.md`, `.agents/state.md`. A file already on disk keeps its current contents — report it as skipped.
 
 Done when: every path in the scaffold's tree exists, and every file that was already there is byte-identical to before.
 

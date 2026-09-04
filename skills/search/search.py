@@ -1,4 +1,4 @@
-"""Entry point for the job search pipeline (``script-search`` console script).
+"""Entry point for Search's scripted-source mode.
 
 Stage order (spec — search.py section + Testing section)::
 
@@ -50,7 +50,7 @@ _NO_ARG = object()
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="script-search",
+        prog="search script",
         description="Run the config-driven job search pipeline",
     )
     parser.add_argument(

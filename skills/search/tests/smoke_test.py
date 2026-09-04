@@ -5,7 +5,7 @@ ONLY the ``agent-json`` source (no network) pointing at the fixture in
 ``tests/fixtures/agent.json``. Verifies the exit code, the JSON envelope on
 stdout, and the exact survivors.
 
-Run from ``.agents/skills/script-search/``::
+Run from ``.agents/skills/search/``::
 
     python tests/smoke_test.py
 
@@ -25,8 +25,8 @@ from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent          # .agents/skills/script-search/tests
-SEARCH_DIR = HERE.parent                        # .agents/skills/script-search/
+HERE = Path(__file__).resolve().parent          # .agents/skills/search/tests
+SEARCH_DIR = HERE.parent                        # .agents/skills/search/
 FIXTURE = HERE / "fixtures" / "agent.json"
 
 # Filters the temp home's filters.py defines. ``not_agency`` runs pre-enrich

@@ -1,13 +1,8 @@
----
-name: browser-search-linkedin
-description: Inspect LinkedIn job search results in the signed-in browser and produce a timestamped, salary-only shortlist using the shared seen ledger. Use for "search LinkedIn", "scrape LinkedIn jobs", or "/browser-search-linkedin". Does not apply to jobs or edit the user's profile.
----
-
 # Browser search LinkedIn
 
 Read `candidate/profile.md`, `candidate/role-preferences.md`, and
 `candidate/search-filters.md` for fit. Read the shared
-[shortlist format](../../search/shortlist-format.md) for naming and layout. Do not run
+[shortlist format](../shared/shortlist-format.md) for naming and layout. Do not run
 `search.py`, guest APIs, direct HTTP requests, or external salary lookups.
 
 ## Scope and browser boundary
@@ -78,8 +73,8 @@ under the stopping rule above.
 
 ## Shared ledger
 
-Read [ledger.py](../../search/lib/search_shared/ledger.py) before operating on the
-database. Add `.agents/search/lib` to the Python import path and import
+Read [ledger.py](../shared/lib/search_shared/ledger.py) before operating on the
+database. Add `.agents/skills/search/shared/lib` to the Python import path and import
 `Ledger` from `search_shared.ledger` and `Posting` from `search_shared.model`.
 Use `Ledger.unseen_identities(set_of_source_id_pairs)` for each collected batch;
 it checks identities in one connection and prunes expired records.

@@ -13,7 +13,7 @@ description: >-
 
 Relay facts inline in any prompt you write; the candidate documents and `search/applications/index.csv` stay in the main session.
 
-**Prerequisites** — read `.agents/state.md` for the other stages. Applying from a shortlist reads the newest `search/shortlists/*.md` (the latest run); with none present, hand off to `script-search`.
+**Prerequisites** — read `.agents/state.md` for the other stages. Applying from a shortlist reads the newest `search/shortlists/*.md` (the latest run); with none present, hand off to `search`.
 
 **Two branches:**
 
@@ -24,7 +24,7 @@ Steps 2–4 run one application at a time: the next posting opens only after thi
 
 ## 1. Selection and pre-batch check
 
-Read the shared [shortlist format](../../search/shortlist-format.md) for run filenames and selection rules; both search skills produce this format.
+Read search's shared shortlist format for run filenames and selection rules; both search modes produce this format.
 
 Selection is the shortlist entries the user names, by number or company (`apply 1 3 5`). Use the shortlist explicitly referenced in the conversation, otherwise the latest run by filename timestamp and collision suffix, not modification time. A full timestamp or filename selects a specific run; a date matching multiple runs requires asking which one. For ambiguous legacy names, consult the file's recorded run time or ask. Confirm the filename and selected companies before opening postings; row numbers are local to that file. With nothing named, show the shortlist and ask which entries.
 
