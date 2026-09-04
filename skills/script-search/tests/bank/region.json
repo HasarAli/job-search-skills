@@ -1,0 +1,27 @@
+[
+  {"location": "Sandy, UT", "keep": true},
+  {"location": "San Diego, CA", "keep": true},
+  {"location": "Toronto, ON", "keep": true},
+  {"location": "Remote, United States", "keep": true},
+  {"location": "Remote", "keep": true},
+  {"location": "U.S. Remote", "keep": true},
+  {"location": "New York, U.S.", "keep": true},
+  {"location": "Dublin, OH", "keep": true},
+  {"location": "Waukesha, WI", "keep": true},
+  {"location": "", "keep": true},
+
+  {"location": "Remote, London, United Kingdom", "keep": false},
+  {"location": "Berlin, Germany", "keep": false},
+  {"location": "London, UK", "keep": false},
+  {"location": "Remote, India", "keep": false},
+  {"location": "Sandy, XX", "keep": false},
+
+  {"location": "San Francisco", "keep": true},
+  {"location": "Toronto", "keep": true},
+  {"location": "Seattle Office", "keep": true},
+  {"location": "New York, NY (HQ)", "keep": true},
+  {"location": "US, CA, Santa Clara", "keep": true},
+  {"location": "6 Locations", "keep": true},
+  {"location": "Victoria, Australia", "keep": false},
+  {"location": "Bengaluru, India", "keep": false}
+]

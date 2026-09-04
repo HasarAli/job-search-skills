@@ -3,7 +3,7 @@
 A job search you run by talking to an AI coding agent. You supply the raw material and the
 decisions; it keeps your documents, your search, and your tracker in step with them.
 
-Thirteen skills cover the whole thing — turning your old resumes and reviews into a record
+Fourteen skills cover the whole thing — turning your old resumes and reviews into a record
 of your background, deciding what you are looking for, writing and rendering your resume,
 tuning your LinkedIn, finding jobs every day, filling in the applications, reading
 recruiter mail, tracking every outcome, and prepping each interview.
@@ -40,7 +40,8 @@ for them by name; the rest happen on their own when the moment calls for it.
 | highlights | turns your achievements into resume-ready lines |
 | create-resume | builds and renders your resume |
 | **optimize-linkedin** | audits and rewrites your LinkedIn profile |
-| search | produces the daily shortlist |
+| script-search | produces the configured-source shortlist |
+| browser-search-linkedin | produces a salary-only shortlist from the signed-in LinkedIn results tab |
 | apply | fills in and submits applications |
 | inbox | reads and sorts recruiter messages |
 | track | keeps applications.csv current |

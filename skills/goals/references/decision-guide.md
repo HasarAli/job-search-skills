@@ -45,7 +45,7 @@ Ground every recommendation. "Given eight years in payments and no infra roles o
 
 **Equity.** Trade-off: private-company equity is illiquid and usually worth zero. Recommend counting it only where there is a real path to cash — a public company's RSUs, or a late-stage private with an established secondary market — and weighting base and cash bonus everywhere else.
 
-**Cadence.** Take the market's convention from the country row, not the user's habit: a market that quotes monthly gross wants a monthly figure in the file, so `search` and `apply` compare like with like.
+**Cadence.** Take the market's convention from the country row, not the user's habit: a market that quotes monthly gross wants a monthly figure in the file, so `script-search` and `apply` compare like with like.
 
 ## Location and company
 

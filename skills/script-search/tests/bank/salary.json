@@ -1,0 +1,35 @@
+[
+  {"text": "The salary range is $100,000–$150,000.", "expected": [100000, 150000, null]},
+  {"text": "Base pay $100k - $150k, plus benefits.", "expected": [100000, 150000, null]},
+  {"text": "USD $100k–$150k", "expected": [100000, 150000, "USD"]},
+  {"text": "$100,000 to $150,000 USD", "expected": [100000, 150000, "USD"]},
+  {"text": "CAD $90,000 – CAD $120,000", "expected": [90000, 120000, "CAD"]},
+  {"text": "The salary range is $160,000 and $200,000.", "expected": [160000, 200000, null]},
+  {"text": "Competitive salary of $100k–$120k.", "expected": [100000, 120000, null]},
+
+  {"text": "Compensation Range: $160K - $210K", "expected": [160000, 210000, null]},
+  {"text": "The estimated starting base salary range for this role is $210K-230K depending on level, location and experience, plus a generous pre-IPO equity package", "expected": [210000, 230000, null]},
+  {"text": "The pay range for this position is between $174,800 and $205,700/year plus variable compensation.", "expected": [174800, 205700, null]},
+  {"text": "$170,000—$200,000 USD", "expected": [170000, 200000, "USD"]},
+  {"text": "Base pay is $165,000-$205,000 annually, with a 10% annual bonus, and equity.", "expected": [165000, 205000, null]},
+  {"text": "Compensation Range: $209.5K - $246.5K", "expected": [209500, 246500, null]},
+  {"text": "NYC/SF hybrid or remote | $200K–$270K + Equity", "expected": [200000, 270000, null]},
+
+  {"text": "What's in it for you: $160-190k/year + bonus and stock options", "expected": [160000, 190000, null]},
+  {"text": "Salary Range: 160k-210k", "expected": [160000, 210000, null]},
+  {"text": "Compensation: $120,000,000 – $160,000,000 annual base salary plus bonus eligible", "expected": [120000000, 160000000, null]},
+  {"text": "Benefits- Competitive salary — $150,000 - 200,000, based on experience", "expected": [150000, 200000, null]},
+  {"text": "The typical base pay range for this role across the U.S. is: $170,000/year - $230,000/year + significant bonus + equity + benefits.", "expected": [170000, 230000, null]},
+  {"text": "The annual salary range for this position is $127,000-$160,000 USD or $110,000-$130,000 CAD, plus equity.", "expected": [127000, 160000, "USD"]},
+  {"text": "$150,150 - $200,000 a year", "expected": [150150, 200000, null]},
+  {"text": "Depending on experience. The reasonably estimated national salary range for this position is between $150,150-$200,000 per year, plus an equity package for eligible employees.", "expected": [150150, 200000, null]},
+  {"text": "Estimated Pay Range: $171,000 - $198,000 per year salaried*", "expected": [171000, 198000, null]},
+
+  {"text": "Competitive salary plus cash bonus incentives", "expected": null},
+  {"text": "$145,000 USD.", "expected": null},
+  {"text": "Compensation: up to $150,000.", "expected": null},
+  {"text": "Salary from $100,000 per year.", "expected": null},
+  {"text": "$150k–$200k in equity + stock options.", "expected": null},
+  {"text": "Pay is $45–$55 per hour.", "expected": null},
+  {"text": "$100k and $20k bonus.", "expected": null}
+]

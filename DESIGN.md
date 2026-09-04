@@ -1,6 +1,6 @@
 # Design — Job-Search Skills
 
-Thirteen skills a job seeker installs into their agent harness. They run a whole job
+Fourteen skills a job seeker installs into their agent harness. They run a whole job
 search — background, targets, resume, profile, daily shortlist, applications,
 inbox, tracking, interviews, retros — against a data repo the skills scaffold themselves.
 
@@ -28,7 +28,7 @@ after that reads and edits the user's copy, never its own reference.
 
 ### The one exception: shipped scripts
 
-`search/search.py` and the `search/pipeline/` package are real code, not a seed: the
+`script-search/search.py` and the `script-search/pipeline/` package are real code, not a seed: the
 fetch/dedup/filter/price engine (`sources/`, `comp/`, `store/`), its `defaults/` seeds,
 `requirements.txt`, and `tests/`. It ships because it is engine, never user-edited — the
 profession and region gates it applies are external config (`.agents/search/config.yaml`
@@ -80,7 +80,7 @@ detect.
 **Never name a specific tool, model, or vendor in a skill.** Say "the browser tools this
 harness provides", not a tool id; "this harness's MCP client", not an install command.
 
-## The thirteen skills
+## The fourteen skills
 
 Each owns one seam. Five run only on the user's explicit request (**bold**).
 
@@ -92,7 +92,8 @@ Each owns one seam. Five run only on the user's explicit request (**bold**).
 | `highlights` | achievement bullets and their quality. XYZ format, a number or a visible placeholder on each, scored on a rubric → `career/highlights.md` |
 | `create-resume` | selection, assembly, render. User picks bullets from `career/highlights.md`, one YAML per target region, RenderCV → PDF in `resumes/<date>/` |
 | **`optimize-linkedin`** | the live profile page. Dated crawl snapshot, section-by-section scoring, each approved rewrite applied in the browser one confirmed edit at a time. An optional branch, never a prerequisite |
-| `search` | the daily shortlist. Newest-first passes, dedup against the cache, filter, comp figure on every row → `shortlists/<timestamp>.md`, numbered. Cron-able |
+| `script-search` | the configured-source shortlist. Newest-first passes, dedup against the cache, filter, comp figure on every row → `shortlists/<timestamp>.md`, numbered. Cron-able |
+| `browser-search-linkedin` | a salary-only shortlist from the signed-in LinkedIn results tab, using the shared seen ledger |
 | `apply` | form → submit → record. Autofill, Q&A bank, explicit user yes before every submit, then the `applications.csv` row and the JD snapshot |
 | `inbox` | inbound recruiter threads on every configured channel. Reads, scores, recommends; the user sends every reply |
 | `track` | one application event onto its row, then the stale-application sweep |
@@ -119,7 +120,7 @@ teach/<topic>/      one folder per topic being learned
 .agents/
   state.md          the stage machine — what has happened, never what should happen next
   config/           channels.md, conventions/, qa-bank.md, autofill-config.json
-  search/           config.yaml, filters.py (search sources + filters)
+  search/           config.yaml, filters.py, shortlist format, shared ledger/types
   templates/        resume.yaml and theme overrides
   cache/            dedup keys and scrape output (GITIGNORED)
 ```

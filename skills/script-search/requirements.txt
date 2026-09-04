@@ -1,0 +1,8 @@
+beautifulsoup4
+feedparser
+pyyaml
+openpyxl
+curl-cffi==0.16.0
+
+# test
+pytest
