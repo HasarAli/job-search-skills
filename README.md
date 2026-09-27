@@ -3,7 +3,7 @@
 A set of AI agent skills to help you manage your job search, from organizing your experience to preparing for interviews. You stay in control of every decision and anything sent on your behalf.
 
 > [!NOTE]
-> **What are skills?** A skill is a simple text document with instructions an AI agent can follow for a task. These documents use Markdown, a plain-text format that's easy for people to read and edit.
+> **What are skills?** A skill is a set of files that teaches an AI agent how to handle a task. It usually includes a readable instruction document and may also include helpful extras, such as scripts or examples.
 
 ## Get started
 
