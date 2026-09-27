@@ -37,8 +37,8 @@ To access the folder across devices, you can also ask your agent for help syncin
 
 If a skill doesn't work the way you'd like, ask your agent to change it to fit your preferences:
 
-> Please update the `search` skill so it [describe your preference].
+> Please update the `highlights` skill so it [describe your preference].
 
 If you'd like to share your changes, ask your agent to prepare a pull request against this repository:
 
-> Please open a pull request with my skill changes against `HasarAli/job-search-skills`.
+> Please review my changes to the `highlights` skill, remove any personal information from them, and open a pull request against `HasarAli/job-search-skills`.
