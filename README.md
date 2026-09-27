@@ -3,7 +3,7 @@
 A set of AI agent skills to help you manage your job search, from organizing your experience to preparing for interviews. You stay in control of every decision and anything sent on your behalf.
 
 > [!NOTE]
-> **What are skills?** Skills are instructions that teach your AI agent how to help with specific parts of your job search. Your agent uses them in this project when you ask or when they're relevant.
+> **What are skills?** Skills are instructions that teach an AI agent how to handle specific tasks. The skills in this project guide your agent through parts of your job search, from organizing your experience to preparing for interviews.
 
 ## Get started
 
