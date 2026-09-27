@@ -5,7 +5,6 @@
 Copy this into `.agents/templates/resume.yaml`, replace every `<...>` placeholder, and drop the sections the target regions omit (see "Per-region sections" below). Field syntax and gotchas: [rendercv-guide.md](rendercv-guide.md).
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
 cv:
   name: <Full Name>
   headline: <Target Role> · <Specialty>        # mirror candidate/role-preferences.md positioning
@@ -14,7 +13,7 @@ cv:
   phone: "<+E.164 number>"                     # quoted, E.164 only; omit if region omits phone
   # photo: <path/to/photo.jpg>                 # ONLY where the region expects one
   social_networks:
-    - network: LinkedIn                        # or GitHub, GitLab, ORCID, ...
+    - network: LinkedIn                        # or ORCID, ...
       username: <username>
   custom_connections:                          # free-form header lines, e.g. work authorization
     - fontawesome_icon: globe

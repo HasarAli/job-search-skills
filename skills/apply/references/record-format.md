@@ -40,7 +40,7 @@ id,datetime,company,role,location,source,url,resume_file,status,last_activity,no
 | `location` | Location string from the posting (city/remote/hybrid) |
 | `source` | Where the job came from — the board or platform name from the shortlist entry, or the inbound channel and the recruiter's name |
 | `url` | Posting URL; left empty when a recruiter supplied the role directly |
-| `resume_file` | Empty while `draft`; project-relative path to the exact local application PDF once attached and submitted. The PDF is ignored; only its YAML source is committed. |
+| `resume_file` | Empty while `draft`; project-relative path to the exact local application PDF once attached and submitted. |
 | `status` | `draft` at workspace creation; `applied` only after submission; later transitions belong to `track` |
 | `last_activity` | Date of the most recent event (`2026-07-14`) — workspace creation for a draft, then submission and later events |
 | `notes` | Where this application stands, in free text: who is handling it, what was scheduled and when, referral, filter tension, anything learned. Rewritten each time it changes, not appended to |

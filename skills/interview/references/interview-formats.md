@@ -81,10 +81,10 @@ Two minutes spoken. "We" in the Action section is the most common failure: it hi
 - Time-box to the stated budget and say in the README where the box cut something off.
 - README first: how to run it, the design decisions, what was left out and why.
 - Tests on the logic that matters, not coverage theatre.
-- Commit history that reads as steps.
+- A project history that reads as clear steps.
 - Expect a follow-up call on it: prep to defend every decision and to name the first thing they would change.
 
-**Bar:** it runs from a clean clone on the stated commands; scope matches the brief; the README answers "why" and not only "how".
+**Bar:** it runs from a fresh setup using the stated commands; scope matches the brief; the README answers "why" and not only "how".
 
 ## Final / executive
 

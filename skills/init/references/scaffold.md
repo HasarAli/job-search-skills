@@ -1,6 +1,6 @@
 # Scaffold — what `init` creates
 
-Every path is relative to the repo root. Create directories with `mkdir -p`; write a file only when it is absent.
+Every path is relative to the project folder. Create directories with `mkdir -p`; write a file only when it is absent.
 
 ## Tree
 
@@ -11,81 +11,19 @@ search/
   shortlists/                timestamped search results
   applications/             index.csv plus one directory per application, draft onward
 development/                 one teaching workspace per topic
-info-drop-zone/              raw material; gitignored except README.md
+info-drop-zone/              raw material; cleared after intake
 .agents/config/              channels, autofill, Q&A bank, conventions
 .agents/search/              search source configuration and regenerable state
 .agents/templates/           canonical resume template and theme assets
-.agents/cache/               regenerable agent data; gitignored
+.agents/cache/               regenerable agent data
 .agents/state.md             stage machine
 ```
 
 `search/applications/index.csv`, application directories, base-role resume directories, shortlists, `candidate/<platform>/`, and topic directories under `development/` are created by the skills that write into them.
 
-## `.gitignore`
-
-```gitignore
-# Python
-__pycache__/
-.pytest_cache/
-*.py[cod]
-.venv/
-
-# Env / secrets
-.env
-.env.*
-!.env.example
-*.key
-
-# OS cruft
-.DS_Store
-Thumbs.db
-
-# Editor
-.vscode/
-.idea/
-
-# Resume YAML is tracked; all rendered resume artifacts stay local and regenerate.
-search/resumes/**/*.png
-search/resumes/**/*.md
-search/resumes/**/*.typ
-search/resumes/**/*.html
-search/resumes/**/*.pdf
-search/resumes/.render-cache/
-
-# Application resume YAML is tracked; rendered artifacts stay local.
-search/applications/**/*_Resume.pdf
-search/applications/**/*_Resume*.png
-search/applications/**/*_Resume.md
-search/applications/**/*_Resume.html
-search/applications/**/*.typ
-
-# Daily shortlists regenerate on each run
-search/shortlists/
-
-# Pipeline state that regenerates
-.agents/search/seen.db
-.agents/search/visa-wages/
-
-# Raw documents you dropped for intake — originals stay on your machine, not in git
-info-drop-zone/*
-!info-drop-zone/README.md
-
-# Agent caches: dedup keys, raw scrape output, DOL salary index
-.agents/cache/
-
-# Platform raw review output (historical, not synthesized context)
-candidate/*/*-reviews/
-```
-
-## `.gitattributes`
-
-```gitattributes
-*.pdf binary
-```
-
 ## `README.md`
 
-Do not write a second copy here. This repository ships its own `README.md` at the root —
+Do not write a second copy here. This package includes its own `README.md` at the root —
 it is the template. Copy it verbatim into the new project, then correct only what is
 project-specific (the user's name in the title, if the title carries one).
 
@@ -94,7 +32,7 @@ and resume conventions, and the skills glossary.
 
 ## `info-drop-zone/README.md`
 
-Instructions and link list in one file — the folder holds no other tracked file.
+Instructions and link list in one file — the folder holds no other file.
 
 ```markdown
 # info-drop-zone/
@@ -118,7 +56,6 @@ two of context helps if the URL is not self-explanatory.
 ### Profiles
 
 - LinkedIn:
-- GitHub:
 - Portfolio / personal site:
 
 ### Work
@@ -128,8 +65,7 @@ two of context helps if the URL is not self-explanatory.
 
 ---
 
-Nothing in here is saved to version history — the originals stay on your machine. What
-gets extracted from them lands in `candidate/`. When processing finishes you will be asked,
+The originals stay on your machine. What gets extracted from them lands in `candidate/`. When processing finishes you will be asked,
 file by file, whether to delete what has been read; nothing is removed without your yes.
 ```
 
@@ -142,7 +78,7 @@ Skills read this first and update their stage on completion. Stages only — no 
 
 ## Stages
 
-- [ ] init — repo scaffolded
+- [ ] init — workspace scaffolded
 - [ ] intake — `candidate/profile.md`, `candidate/career-diary.md` populated
 - [ ] goals — targets → `candidate/role-preferences.md`, filters → `candidate/search-filters.md`
 - [ ] highlights — XYZ bullets → `candidate/highlights.md`

@@ -76,6 +76,6 @@ Done when: each region file has a PDF and exactly one PNG — a second PNG means
 
 ## 6. Report and record
 
-Report each base role-and-region path or application-local path and every placeholder still open. Update the `create-resume` stage in `.agents/state.md`. Commit only resume YAML: every PDF, Markdown render, HTML render, and PNG preview remains local and regenerable, including the exact application-local PDF that was submitted. Every submitted application keeps that local PDF beside its YAML so later base edits do not obscure what was sent.
+Report each base role-and-region path or application-local path and every placeholder still open. Update the `create-resume` stage in `.agents/state.md`. Keep every PDF, Markdown render, HTML render, and PNG preview beside its YAML as local, regenerable output, including the exact application-local PDF that was submitted. Every submitted application keeps that local PDF beside its YAML so later base edits do not obscure what was sent.
 
 Done when: every region's paths and open placeholders are reported, and the `create-resume` stage is updated in `.agents/state.md`.

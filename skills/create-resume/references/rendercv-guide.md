@@ -39,7 +39,7 @@ printf '\n<!-- generated: %s | source: %s.yaml -->\n' "$TS" "$BASE" >> "$DIR/$BA
 
 ### Windows
 
-- **`PYTHONIOENCODING=utf-8` is required.** RenderCV prints checkmark glyphs (✓) that crash on the default cp1252 Windows console. Run via a bash shell (Git Bash) for the env-var prefix, or set `$env:PYTHONIOENCODING = 'utf-8'` first in PowerShell.
+- **`PYTHONIOENCODING=utf-8` is required.** RenderCV prints checkmark glyphs (✓) that crash on the default cp1252 Windows console. Set `$env:PYTHONIOENCODING = 'utf-8'` first in PowerShell.
 - **`-nohtml` is the only safe skip flag.** PDF renders *from* the Typst file, so `-notyp` / any other `--dont-generate-*` silently takes PDF and PNG down with it, exit code 0 and no error.
 - Leave PNG generation on: it is the fastest way to inspect output, and RenderCV writes **one PNG per page**, so the file count is the page check.
 
@@ -66,7 +66,6 @@ Region conventions (paper size `us-letter` vs `a4`, photo, page count) come from
 - Phone must be E.164 (`"+15551234567"`), copied from `candidate/profile.md`.
 - Nested highlights: indent a sub-item two spaces under its parent line within the same string.
 - Editor autocompletion: put this on line 1 of every YAML:
-  `# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json`
 
 ## Locales
 
