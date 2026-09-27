@@ -14,6 +14,10 @@ To access the folder across devices, you can also ask your agent for help syncin
 
 > Help me sync this project folder across my devices using Google Drive.
 
+## What are skills?
+
+Skills are instructions that teach your AI agent how to help with specific parts of your job search. Your agent uses them in this project when you ask or when they're relevant.
+
 ## Essential skills, in order
 
 1. **init** — set up your job-search folder
