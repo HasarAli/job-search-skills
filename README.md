@@ -2,6 +2,10 @@
 
 A set of AI agent skills to help you manage your job search, from organizing your experience to preparing for interviews. You stay in control of every decision and anything sent on your behalf.
 
+## About skills
+
+Skills are instructions that teach your AI agent how to help with specific parts of your job search. Your agent uses them in this project when you ask or when they're relevant.
+
 ## Get started
 
 Create a dedicated job-search folder wherever you like on your computer. Then, in your AI agent (such as Claude Cowork or ChatGPT), start a project using that folder.
@@ -13,10 +17,6 @@ Once the project is open, copy this page's link and ask your agent:
 To access the folder across devices, you can also ask your agent for help syncing it with Google Drive, iCloud, or another service:
 
 > Help me sync this project folder across my devices using Google Drive.
-
-## What are skills?
-
-Skills are instructions that teach your AI agent how to help with specific parts of your job search. Your agent uses them in this project when you ask or when they're relevant.
 
 ## Essential skills, in order
 
