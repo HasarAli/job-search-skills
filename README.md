@@ -32,3 +32,7 @@ To access the folder across devices, you can also ask your agent for help syncin
 - **inbox** — sort recruiter messages and plan replies
 - **retro** — review your search and identify what to adjust
 - **teach** — learn a topic over multiple sessions
+
+## Make it your own
+
+If a skill doesn't work the way you'd like, ask your agent to change it to fit your preferences. If you'd like to share your changes, ask your agent to open a pull request against this repository.
