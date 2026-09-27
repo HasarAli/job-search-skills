@@ -1,68 +1,34 @@
 # Job Search Skills
 
-A job search you run by talking to an AI coding agent. You supply the raw material and the
-decisions; it keeps your documents, your search, and your tracker in step with them.
+A set of AI agent skills to help you manage your job search, from organizing your experience to preparing for interviews. You stay in control of every decision and anything sent on your behalf.
 
-Thirteen skills cover the whole thing — turning your old resumes and reviews into a record
-of your background, deciding what you are looking for, writing and rendering your resume,
-tuning your LinkedIn, finding jobs every day, filling in the applications, reading
-recruiter mail, tracking every outcome, and prepping each interview.
+## Get started
 
-Nothing here is tied to one agent. The instructions live in plain files that any of them
-can read.
+Create a dedicated job-search folder wherever you like on your computer. Then, in your AI agent (such as Claude Cowork or ChatGPT), start a project using that folder.
 
-## Install
+Once the project is open, copy this page's link and ask your agent:
 
-```
-npx skills add https://github.com/HasarAli/job-search-skills
-```
+> Make these job-search skills available in this project only, then help me get started.
 
-Then open the folder you want your job search to live in and say **"set up my job
-search"**. The `init` skill builds the whole thing from scratch — folders, starter
-documents, a README written for you, and the first commit. There is no template to clone
-and nothing to fill in by hand.
+To access the folder across devices, you can also ask your agent for help syncing it with Google Drive, iCloud, or another service:
 
-From there, say **"process my drop folder"** and follow what each skill tells you next.
+> Help me sync this project folder across my devices using Google Drive.
 
-You will need Python for the job-search and resume tooling; the skills walk you through
-installing what they use, when they first need it.
+## Essential skills, in order
 
-## Skills
+1. **init** — set up your job-search folder
+2. **intake** — organize your resumes and experience
+3. **goals** — decide what roles and conditions you want
+4. **highlights** — turn your experience into strong resume points
+5. **create-resume** — build a resume for each role
+6. **search** — find relevant job openings
+7. **apply** — prepare and submit applications
+8. **track** — keep application progress up to date
+9. **interview** — prepare for interviews and debrief afterward
 
-Each of these is a job the agent knows how to do. **Bold** ones happen only when you ask
-for them by name; the rest happen on their own when the moment calls for it.
+## Supporting skills
 
-| Name | What it does |
-|---|---|
-| **init** | sets the project up from scratch |
-| intake | turns your dropped documents into a record of your background |
-| **goals** | walks you through what you are looking for |
-| highlights | turns your achievements into resume-ready lines |
-| create-resume | builds and renders your resume |
-| **optimize-linkedin** | audits and rewrites your LinkedIn profile |
-| search | produces a shortlist from configured sources or the signed-in LinkedIn results tab |
-| apply | fills in and submits applications |
-| inbox | reads and sorts recruiter messages |
-| track | keeps applications.csv current |
-| **retro** | finds where your applications are getting stuck |
-| interview | prepares you for a specific interview, and debriefs it after |
-| **teach** | teaches you a topic across multiple sessions |
-
-Nothing is ever sent on your behalf without your explicit yes — every application, every
-reply, every edit to your live profile is shown to you first.
-
-## Your data stays yours
-
-No personal data ships with these skills. Everything about you — your background, your
-targets, your resumes, your applications — lives in your own repo on your own machine,
-created by `init` and committed as you go, so nothing is ever really lost.
-
-## Design
-
-How the skills are put together, what each one owns, and the rules for editing them:
-[DESIGN.md](DESIGN.md).
-
-## Licence
-
-`skills/teach/` is vendored from [mattpocock/skills](https://github.com/mattpocock/skills)
-under the MIT licence, with one repo-local modification — see `skills/teach/LICENSE`.
+- **optimize-linkedin** — improve your LinkedIn profile
+- **inbox** — sort recruiter messages and plan replies
+- **retro** — review your search and identify what to adjust
+- **teach** — learn a topic over multiple sessions
