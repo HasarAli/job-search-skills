@@ -30,7 +30,7 @@ Selection is the shortlist entries the user names, by number or company (`apply 
 
 `.agents/config/autofill-config.json` missing → offer autofill setup before the batch: [references/autofill-setup.md](references/autofill-setup.md). `"service": "none"` is a complete config, and every field then comes from the bank and the user's answers.
 
-Choose the matching current base under `search/resumes/<role-slug>/<region>/`. Allocate the application stem, create `search/applications/<stem>/`, save the posting as `job-description.md`, and create its index row with `status: draft`. Compare the job description with the base and recommend tailoring only when the differences are material; if the user chooses it, hand the application directory to `create-resume`.
+Choose the matching current base under `search/resumes/<role-slug>/<region>/`. Allocate the application stem, create `search/applications/<stem>/`, save the posting as `job-description.md`, and create its index row with `status: draft`. Compare the job description with the base and recommend tailoring only when the differences are material; if the user chooses it, hand the application directory to `create-resume`. Keyword wording is material: many ATSs auto-reject on literal matches. List the posting's required technologies and skills in its exact spelling ("React.js", "SQL", "CI/CD") and check each against the resume text; a synonym or shorter form ("React" for "React.js", "PostgreSQL" for "SQL") counts as a miss. Report each miss to the user, and include only the ones the candidate documents support.
 
 Copy the selected or tailored YAML into the application directory and name it `<First>_<Last>_<Posted_Role>_Resume.yaml`. Render the matching PDF there for review and attachment, but leave `resume_file` empty while the row is a draft. Compare `.agents/config/autofill-config.json`'s `resume_file` with that application-local PDF: the service attaches whatever was last uploaded to it, so any mismatch must be resolved or explicitly confirmed before filling.
 
@@ -41,6 +41,8 @@ Done when: every selected entry has an application directory with `job-descripti
 Open the posting with whatever browser-automation tools this harness provides, driving the user's own signed-in session; an expired session ends the run — report it and stop there. Trigger the configured autofill service, then close the remaining fields from `.agents/config/qa-bank.md`, matching on meaning rather than wording: [references/qa-bank-format.md](references/qa-bank-format.md). Attach the application-local PDF. When an autofill service attaches its stored file, confirm that file is the same resume before continuing.
 
 Anything the bank cannot answer is one question to the user per message, and their answer is what goes in the field.
+
+Free-text answers reuse the posting's own wording for technologies and skills, word for word, wherever the candidate documents support the claim: write "React.js" when the posting says "React.js", never "React".
 
 Done when: every field holds a value from the candidate documents, the bank, or the user; the application-local PDF is attached; and any field left blank is named to the user.
 

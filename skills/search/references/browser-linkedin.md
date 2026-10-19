@@ -18,46 +18,87 @@ that range are allowed. Stop at the requested end, exhausted results, login,
 CAPTCHA, rate-limit notice, or inaccessible details; report partial coverage
 without bypassing the restriction or repeatedly reloading.
 
+Signed-out pages count as login: if the page shows "Sign in to create job alert"
+or the guest header, stop and ask the user to sign in. The guest page silently
+drops the remote, experience, and salary filters, so its results are not usable.
+
+Get the current America/Toronto time with Python `zoneinfo` or PowerShell
+`Get-Date`, not `TZ=... date` in Git Bash, which silently prints UTC.
+
+## Search URL
+
 Use the newest shortlist that actually covered LinkedIn and a comparable query
-to choose a Date posted filter. Prefer the smallest available window covering
-the elapsed interval, with overlap for coarse dates; otherwise use the configured
-`posted_since_hours` in `.agents/search/config.yaml`. Do not override an explicit
-user window. Record the actual filter, query, page range, and any incomplete
-prior coverage; a shortlist timestamp is not proof that all older results were seen.
+to choose the window. LinkedIn accepts a custom `f_TPR=r<seconds>`: use the
+elapsed time since that run plus about 5h overlap rather than jumping to Past
+week. With no comparable run, use the configured `posted_since_hours` in
+`.agents/search/config.yaml`. Do not override an explicit user window. Record the
+actual filter, query, page range, and any incomplete prior coverage; a shortlist
+timestamp is not proof that all older results were seen.
+
+Add the URL filters the candidate's search filters support: `f_JT=F` for
+full-time only. US geo has a salary filter, `f_SB2` (`6` = $140k+); pick the
+bucket at or below the user's floor. It also removes no-salary postings. Canada
+geo has no salary filter.
+
+Use plain keywords from `candidate/role-preferences.md`. Closely related titles
+("frontend engineer", "full stack engineer") return largely the same page, while
+the generic seniority title ("senior software engineer") returns a different
+one: run the generic title first and treat the specialized ones as an optional
+second pass, deduped by the ledger. Boolean keywords match loosely (description
+text too), and `NOT` does not keep unwanted titles out.
 
 ## Collect cards, then inspect details sequentially
 
 1. Collect all currently rendered cards in one compact DOM/accessibility read:
    job ID from an observed URL or card attribute, title, company, location,
-   posted date, benefits, and visible salary. Use “not shown” for absent fields.
+   posted date, benefits, visible salary, and LinkedIn's **Viewed** label.
+   Use “not shown” for absent fields, not an inference.
    Keep this page inventory in memory. When scrolling reveals more cards in a
    virtualized list, collect only newly rendered IDs; one read does not prove
    the whole page was covered. Rebuild the inventory after pagination/filter changes.
-2. Before opening any details, batch-check the collected identities against
+   Cards carrying **Viewed** are already reviewed by the user: skip them without
+   opening, do not count them as inspected or cut, and note the skipped count in
+   the Skipped line.
+2. Triage each unviewed card on its own text, before the ledger check or pane.
+   Do not open a card that shows a clear miss against the candidate's files:
+   - Off-target title: a discipline, level, or track that
+     `candidate/role-preferences.md` excludes or does not target.
+   - Low pay: hourly when the user wants salaried, or an explicitly labelled
+     range topping below the floor in `candidate/search-filters.md` for its
+     currency and arrangement. `$`-only or unlabelled ranges go through the
+     pane; do not assume a currency.
+   - Staffing or recruiting agency poster.
+   - An arrangement or location the search filters exclude (for example,
+     hybrid outside the user's commuting area).
+   Record these as `filtered:card_triage`, with reason starting "Card only:"
+   and the card text that triggered it (no ID: report unidentified). Count
+   them separately in the Cut line. Never triage on a guess; a borderline card
+   goes through the pane.
+3. Before opening any details, batch-check the remaining identities against
    `.agents/search/seen.db`: `source = linkedin`,
    `source_id = urn:li:jobPosting:<id>`. Use the shared ledger procedure below
    and dedup within this run too. Queue only unseen/expired records or justified
    early refreshes. If no stable ID is available, do not fabricate one;
    report the card as uninspected/unidentified and omit it from the shortlist.
-3. Click the card's non-link selection area to load the in-page details pane.
+4. Click the card's non-link selection area to load the in-page details pane.
    Never click the title anchor as a substitute. Wait for the rendered pane's
    job ID to match the queued card and its content to finish loading before
    extracting text; an updated URL alone is not proof the pane is ready.
    If the pane exposes no ID, verify its title and company instead; ambiguous
    identity is incomplete inspection. Expand inline sections without navigation.
    If no safe selection target exists, report the coverage gap.
-4. Read **About the job** for salary, responsibilities, technologies, eligibility,
+5. Read **About the job** for salary, responsibilities, technologies, eligibility,
    and freshness. Read **About the company** for employee count, industry, and
    description. Employee count is not engineering-team size. The pane may have
    salary even when the card has none. Missing or failed details are not proof
    of no salary: report incomplete inspection, not `filtered:no_salary`.
-5. Include only roles with explicit numeric salary/pay information on the card
+6. Include only roles with explicit numeric salary/pay information on the card
    or pane and acceptable fit. Preserve salary verbatim, including currency,
    pay period, multiple geographic bands, and apparent formatting errors.
    “Competitive salary,” benefits, and third-party estimates do not qualify.
    Do not repair figures, assume a currency for `$`, or equate total comp with
    base. Explain ambiguity separately in fit notes.
-6. Reject explicit US-only residence/work eligibility requirements; “remote”
+7. Reject explicit US-only residence/work eligibility requirements; “remote”
    alone does not establish Canadian eligibility. Unclear eligibility belongs
    in Watch with the uncertainty named, provided salary is explicit. Apply the
    candidate's other hard constraints; salary alone does not make a fit.
@@ -102,6 +143,8 @@ Record every inspected posting with observed company/title, canonical
 evidence-based reason:
 
 - `shortlisted`: explicit salary and fit; both Apply now and Watch qualify.
+- `filtered:card_triage`: excluded from card text alone, never opened;
+  reason starts "Card only:".
 - `filtered:no_salary`: neither card nor successfully read details has salary.
 - `filtered:eligibility` or `filtered:<constraint>`: a hard exclusion, even
   when salary is present. Include all material exclusions in the reason.
@@ -120,6 +163,6 @@ Use the shared shortlist format for every run, including empty or interrupted ru
 Every included row has verbatim salary, location, posted date, canonical URL,
 fit notes, benefits, and relevant company/technology evidence. Unknown facts
 stay unknown. The Cut line summarizes no-salary exclusions and other reasons
-with counts; separately report duplicate skips and incomplete/unidentified
-cards. State pages actually covered and whether the run completed. Return the
+with counts, card-triage cuts counted on their own; separately report Viewed
+skips, duplicate skips, and incomplete/unidentified cards. State pages actually covered and whether the run completed. Return the
 file link and counts; applying is a separate user selection handled by `apply`.
