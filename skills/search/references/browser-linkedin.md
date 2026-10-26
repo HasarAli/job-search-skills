@@ -3,14 +3,18 @@
 Read `candidate/profile.md`, `candidate/role-preferences.md`, and
 `candidate/search-filters.md` for fit. Read the shared
 [shortlist format](../shared/shortlist-format.md) for naming and layout. Do not run
-`search.py`, guest APIs, direct HTTP requests, or external salary lookups.
+a `search.py` search, guest APIs, direct HTTP requests, or external salary
+lookups. The `search.py` company commands in [Company check](#company-check)
+are the one exception.
 
 ## Scope and browser boundary
 
 Use only the LinkedIn search-results tab through the available browser tools.
 If none is available, ask the user to open one. Do not open job, company, apply,
-or external links, including in another tab. Read only rendered accessibility
-or DOM state, not hidden application state or network responses.
+or external links, including in another tab, outside the
+[Company check](#company-check) steps, which may open an apply link and a
+company's People page in a new tab. Read only rendered accessibility or DOM
+state, not hidden application state or network responses.
 
 Honor the requested page range; if unspecified, inspect only the current page
 and state that scope. Scrolling the results list and using its pagination within
@@ -58,7 +62,9 @@ text too), and `NOT` does not keep unwanted titles out.
    the whole page was covered. Rebuild the inventory after pagination/filter changes.
    Cards carrying **Viewed** are already reviewed by the user: skip them without
    opening, do not count them as inspected or cut, and note the skipped count in
-   the Skipped line.
+   the Skipped line. With `company_check` on, every card whose location names
+   the home country is company evidence, Viewed or not (see
+   [Company check](#company-check)).
 2. Triage each unviewed card on its own text, before the ledger check or pane.
    Do not open a card that shows a clear miss against the candidate's files:
    - Off-target title: a discipline, level, or track that
@@ -102,6 +108,8 @@ text too), and `NOT` does not keep unwanted titles out.
    alone does not establish Canadian eligibility. Unclear eligibility belongs
    in Watch with the uncertainty named, provided salary is explicit. Apply the
    candidate's other hard constraints; salary alone does not make a fit.
+   With `company_check` on, run the [Company check](#company-check) on each
+   included row located outside the home country, and place it by the label.
 
 Pause roughly 0.5–1 second between card clicks. Inspect sequentially, with no
 parallel scraping or delegated browser workers, and no unnecessary reloads.
@@ -111,6 +119,60 @@ Keep browser calls short enough to finish within tool timeouts; after a timeout,
 check the current card/pane and completed results before resuming, rather than
 replaying a whole batch. A pane that remains unavailable ends partial coverage
 under the stopping rule above.
+
+## Company check
+
+Only when `.agents/search/config.yaml` has a `company_check:` block. Read it
+for `home`, `home_terms`, `linkedin_geo_id`, and `people_check_cap`. Labels and
+the evidence behind them are in the search skill's Company check section. Run
+each command from the project root as
+`python .agents/skills/search/search.py <command>`; each prints the company's
+JSON, including its `label` and whether a check is `due`.
+
+For each included row located outside the home country:
+
+1. Look up the company with `--company "<company>"`. If it is `confirmed`, or
+   not `due`, use its label and skip to step 4.
+2. Apply link. If the pane's apply control is "Apply on company website" (not
+   Easy Apply), read its link without clicking it. LinkedIn wraps the
+   company's address as `/safety/go/?url=<address>`, so decode the `url`
+   parameter, for example
+   `new URL(new URL(a.href).searchParams.get("url"))`. Only if that fails,
+   open the link in a new tab, read the address it lands on, and close the tab
+   without filling in anything; if LinkedIn then asks whether you applied,
+   dismiss the question unanswered. Run
+   `--check-company "<company>" --title "<title>" --url "<that address>"
+   --company-url "https://www.linkedin.com/company/<handle>"`, taking
+   `<handle>` from the pane's company link. For Easy Apply, run it without
+   `--url`: the script guesses the company's job board and accepts a guess
+   only when it lists the same title. Either way, if the board doesn't confirm
+   the company, the script also searches LinkedIn for its jobs in the home
+   country.
+3. People tab. If the label is still `unknown` and fewer than
+   `people_check_cap` People pages have been opened this run, open
+   `https://www.linkedin.com/company/<handle>/people/?facetGeoRegion=<linkedin_geo_id>`
+   in a new tab. With the filter applied, "Where they live" shows the home
+   country and the page reads "<N> associated members"; read N and the largest
+   country's count beside it, then close the tab. Record N above zero with
+   `--record-evidence "<company>" --kind people --detail "<N> employees in
+   <home> on LinkedIn (<M> in <largest country>)" --url "<that address>"`, and
+   zero with `--mark-checked "<company>"`. A handful against hundreds elsewhere
+   is weak; the detail keeps both numbers so the shortlist shows that. Stop
+   opening People pages at the cap, or at any login, CAPTCHA, or rate-limit
+   notice.
+4. Place the row. `confirmed` goes in Apply now when it otherwise fits.
+   `likely` and `unknown` go in Watch, with the label named as the strain.
+   `no` is cut as `filtered:company_check`, with the evidence in the reason.
+   A posting whose own text limits it to another country is
+   `filtered:eligibility` as before; also record that sentence with
+   `--record-evidence "<company>" --kind away_only --detail "<sentence>"`.
+
+Rows located in the home country need no check: their location is the
+evidence. Record every card whose location names the home country (including
+triage cuts and Viewed cards) as soon as the page inventory is collected,
+before any lookup, so a company's home-located card settles its other cards:
+`Ledger.record_evidence_many([(company, "home_role", "<title> — <location>",
+canonical_url, None), ...])`.
 
 ## Shared ledger
 
@@ -161,8 +223,8 @@ progresses. Verify the recorded identities/outcomes and report any write failure
 Use the shared shortlist format for every run, including empty or interrupted runs.
 
 Every included row has verbatim salary, location, posted date, canonical URL,
-fit notes, benefits, and relevant company/technology evidence. Unknown facts
-stay unknown. The Cut line summarizes no-salary exclusions and other reasons
+fit notes, benefits, and relevant company/technology evidence, plus its
+company-check line when the check is on. Unknown facts stay unknown. The Cut line summarizes no-salary exclusions and other reasons
 with counts, card-triage cuts counted on their own; separately report Viewed
 skips, duplicate skips, and incomplete/unidentified cards. State pages actually covered and whether the run completed. Return the
 file link and counts; applying is a separate user selection handled by `apply`.

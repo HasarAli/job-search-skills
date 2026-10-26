@@ -27,3 +27,23 @@ sources:
 filters: []                    # names of predicates in filters.py, pre-enrich
 post_enrichment_filters: []    # names, post-enrich (may read posting.comp)
 comp_floor: null               # null = no floor
+
+# Company check: for remote roles at companies based in another country, learn
+# which companies can employ you where you live. null = off. Example for
+# someone in Canada applying to US companies:
+#
+# company_check:
+#   home: Canada
+#   home_terms: [canada, toronto, vancouver, montreal, ottawa, calgary, edmonton,
+#                waterloo, mississauga, british columbia, alberta, quebec, nova scotia]
+#   home_codes: [CA]             # country code some boards give per role
+#   pay_terms: [CAD, CA$, C$]    # home-currency marks
+#   region_terms: [north america, us or canada, us/canada, us & canada,
+#                  usa or canada, united states or canada, us and canada]
+#   away_terms: [must reside in the us, must be based in the us, us-based candidates only,
+#                residing in the us, anywhere in the us, within the united states,
+#                u.s. employees only, authorized to work in the united states]
+#   linkedin_geo_id: 101174742   # People-tab check in browser search
+#   manage_tenants: true         # add confirmed companies' boards above; drop lapsed ones
+#   people_check_cap: 10         # People-tab checks per browser search
+company_check: null

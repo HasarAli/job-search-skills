@@ -31,6 +31,7 @@ from typing import Any, Callable
 
 import yaml
 
+from pipeline.companies import settings as company_settings
 from search_shared.model import Posting, Query
 
 # ---- state directory -------------------------------------------------------
@@ -65,6 +66,8 @@ class Config:
     seen_db_path: Path
     visa_wages_dir: Path
     levels_attribution: str
+    company_check: company_settings.CheckSettings | None = None
+    config_path: Path | None = None
 
 
 # ---- path helpers ----------------------------------------------------------
@@ -311,6 +314,8 @@ def load_config(config_path: str | Path | None = None) -> Config:
     filters = _parse_name_list(data, "filters", root, errors)
     post_filters = _parse_name_list(data, "post_enrichment_filters", root, errors)
     comp_floor = _parse_optional_number(data, "comp_floor", root, errors)
+    company_check, check_errors = company_settings.parse(data.get("company_check"))
+    errors.extend(_err(root, path, expected, found) for path, expected, found in check_errors)
 
     # Every named filter must resolve to a predicate in the user's filters.py.
     defined: dict[str, Callable[[Posting], bool]] | None = None
@@ -336,4 +341,6 @@ def load_config(config_path: str | Path | None = None) -> Config:
         seen_db_path=home / "seen.db",
         visa_wages_dir=home / "visa-wages",
         levels_attribution=DEFAULT_LEVELS_ATTRIBUTION,
+        company_check=company_check,
+        config_path=resolved,
     )

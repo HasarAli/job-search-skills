@@ -129,7 +129,19 @@ def _parse_card(card: BeautifulSoup, urn: str) -> Posting | None:
         remote=True,  # f_WT=2 enforces remote server-side
         posted_at=_parse_posted_at(time_el),
         stated_comp=None,  # salary is never on the card; fetch_detail sets it
+        company_url=_company_url(company_el),
     )
+
+
+def _company_url(company_el: Any) -> str | None:
+    """The card's company page, without tracking parameters."""
+    href = company_el.get("href") if company_el is not None else None
+    if not href:
+        return None
+    parts = urllib.parse.urlsplit(urllib.parse.urljoin("https://www.linkedin.com/", href))
+    if not parts.path.startswith("/company/"):
+        return None
+    return f"https://www.linkedin.com{parts.path.rstrip('/')}"
 
 
 def _card_url(card: BeautifulSoup, urn: str) -> str:
@@ -258,6 +270,15 @@ class LinkedInAdapter(BaseAdapter):
             return None
         soup = self._page(DETAIL_URL_TEMPLATE.format(job_id=job_id))
         return _description_text(soup) or None
+
+    def company_jobs(self, company: str, geo_id: int) -> list[Posting]:
+        """One unfiltered results page for ``company`` as keywords in one geography.
+
+        Keywords match loosely, so the cards can include other companies; the
+        caller matches them by company page or name.
+        """
+        soup = self._page(SEARCH_URL, {"keywords": company, "geoId": str(geo_id)})
+        return _parse_cards(soup)
 
     # -- internals -----------------------------------------------------------
 

@@ -114,6 +114,20 @@ def test_workday_read_only_post_uses_shared_fetch():
     assert session.calls[0][2]["json"]["offset"] == 0
 
 
+def test_workday_keeps_paging_when_later_pages_report_zero_total():
+    def page(start, total):
+        return Response(data={"total": total, "jobPostings": [
+            {"title": "Software Engineer", "externalPath": f"/job/{i}", "locationsText": "Remote, United States"}
+            for i in range(start, start + 20)]})
+    session = Session(page(0, 45), page(20, 0), Response(data={"total": 0, "jobPostings": [
+        {"title": "Software Engineer", "externalPath": f"/job/{i}", "locationsText": "Remote, United States"}
+        for i in range(40, 45)]}))
+    with http_for(session) as http:
+        rows = WorkdayAdapter({"tenants": ["acme.wd5.Jobs"]}, http=http).board_rows("acme.wd5.Jobs")
+    assert len(rows) == 45
+    assert [call[2]["json"]["offset"] for call in session.calls] == [0, 20, 40]
+
+
 def test_linkedin_block_suppresses_later_searches_to_host():
     fixture = Path(__file__).parent / "fixtures" / "linkedin_search.html"
     session = Session(Response(), Response(429), Response(text=fixture.read_text()))

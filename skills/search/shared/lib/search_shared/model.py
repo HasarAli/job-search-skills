@@ -67,6 +67,10 @@ class Posting:
                                 # or the US/CA-remote check
     skip_freshness: bool = False  # source lists all-open roles (ATS boards); the
                                   # posted_since window does not apply to it
+    board: str | None = None      # "<platform>:<slug>" when the posting came from
+                                  # a company's own job board
+    company_url: str | None = None   # the source's page for the company, if any
+    company_check: dict | None = None   # filled by the company check
 
     def to_dict(self) -> dict:
         """JSON-safe dict. Dates become ISO8601 strings; nested records recurse.
@@ -74,7 +78,7 @@ class Posting:
         This is the single source of truth for shortlist field names — extra
         fields may appear as sources are added, but these keys are the stub.
         """
-        return {
+        data = {
             "source": self.source,
             "source_id": self.source_id,
             "title": self.title,
@@ -86,6 +90,9 @@ class Posting:
             "stated_comp": self.stated_comp.to_dict() if self.stated_comp is not None else None,
             "comp": self.comp.to_dict() if self.comp is not None else None,
         }
+        if self.company_check is not None:
+            data["company_check"] = self.company_check
+        return data
 
 
 @dataclass

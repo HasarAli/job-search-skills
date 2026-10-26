@@ -3,8 +3,10 @@
 ``emit`` prints the shortlist envelope to stdout. The agent driving the search
 skill reads that JSON and renders the markdown shortlist; the JSON itself is
 not saved. The envelope is exactly: ``schema_version``, ``generated_at``
-(ISO8601), ``query``, ``counts``, ``rows``. There is no diagnostics/failures
-section — failures are console-only; the shortlist is pure data.
+(ISO8601), ``query``, ``counts``, ``rows`` — plus ``companies`` when the
+company check is on (board-list changes and platforms worth a reader). There
+is no diagnostics/failures section — failures are console-only; the shortlist
+is pure data.
 """
 
 from __future__ import annotations
@@ -36,7 +38,7 @@ def _query_dict(config) -> dict:
     }
 
 
-def emit(shortlist: list[Posting], config, counts: dict) -> None:
+def emit(shortlist: list[Posting], config, counts: dict, companies: dict | None = None) -> None:
     """Print the run envelope to stdout (newest-first; ``None`` dates last).
 
     This is the machine output the agent consumes — it is not written to disk.
@@ -49,4 +51,6 @@ def emit(shortlist: list[Posting], config, counts: dict) -> None:
         "counts": dict(counts),
         "rows": [posting.to_dict() for posting in rows],
     }
+    if companies is not None:
+        envelope["companies"] = companies
     print(json.dumps(envelope, indent=2, ensure_ascii=False))

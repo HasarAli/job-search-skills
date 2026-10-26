@@ -5,18 +5,25 @@ Stage order (spec — search.py section + Testing section)::
   1. config.load_config()                 structural errors -> stderr JSON, exit 2
   2. sources.registry.build_adapters(config)
   3. collect (runner-owned per-adapter timeout; sequential in v1)
+  3b. company evidence harvest (company_check only; every collected posting
+      and every row of every configured board)
   4. store.dedup.dedup(...)
   5. pushdown re-check (freshness/region/remote) -> contract violations
   6. cheap filters (config.filters only; the built-ins ran at stage 5)
   6b. JD fetch (adapter.fetch_detail for salary; linkedin only)
   7. comp.enrich.enrich(...)
   8. post-enrich filters (config.post_enrichment_filters + comp_floor)
+  8b. company check (company_check only): label survivors, cut the ruled-out,
+      keep config.yaml's board lists in step
   9. output.emit(...) to stdout; ledger.record_sightings(...) in ONE transaction
  10. exit 0 (shortlist produced) / 1 (zero sources reached) / 2 (structural)
 
 One small function per stage; ``main()`` is the only thing that calls them in
 order. Nothing here implements stage behaviour — the sibling modules under
 ``pipeline/`` own it; this module only wires their exact call sites.
+
+The company commands (``--companies``, ``--check-company`` …) read or update
+the company check's memory without running a search; each prints JSON.
 """
 
 from __future__ import annotations
@@ -28,7 +35,10 @@ from typing import Any
 
 from pipeline.comp import visa_wages as wages_cli
 from pipeline.comp.enrich import enrich
+from pipeline.companies import tenants
+from pipeline.companies.check import CompanyCheck, summarise
 from pipeline.config import Config, ConfigError, load_config, load_filters
+from search_shared import companies as company_rules
 from pipeline.filters import BUILTINS
 from search_shared.model import Failure, Posting
 from pipeline.output import emit
@@ -65,7 +75,85 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--refresh-visa-wages", action="store_true",
         help="refresh the US visa-wage dataset, then exit (delegates to pipeline.comp.visa_wages)",
     )
+    company = parser.add_argument_group(
+        "company check",
+        "Read or update what the search knows about companies (needs company_check "
+        "in config.yaml). Each prints JSON and exits without searching.",
+    )
+    company.add_argument("--companies", action="store_true",
+                         help="list every company with its label (narrow with --label)")
+    company.add_argument("--company", metavar="NAME", help="show one company's memory")
+    company.add_argument("--check-company", metavar="NAME",
+                         help="record what --title/--url/--location/--text show, then find and "
+                              "read its job board if a check is due (--force: check anyway)")
+    company.add_argument("--record-evidence", metavar="NAME",
+                         help=f"record --kind/--detail[/--url] (kinds: {', '.join(company_rules.KINDS)})")
+    company.add_argument("--mark-checked", metavar="NAME",
+                         help="stamp an active check that found nothing")
+    company.add_argument("--link-company", nargs=2, metavar=("NAME", "OTHER"),
+                         help="treat OTHER as another name for NAME, merging what is known")
+    company.add_argument("--title", help="role title (for --check-company)")
+    company.add_argument("--url", help="posting or apply link (for --check-company, --record-evidence)")
+    company.add_argument("--location", help="posting location (for --check-company)")
+    company.add_argument("--company-url", help="the company's LinkedIn page, to match its jobs "
+                                               "exactly (for --check-company)")
+    company.add_argument("--text", help="posting text (for --check-company)")
+    company.add_argument("--kind", choices=company_rules.KINDS, help="evidence kind (for --record-evidence)")
+    company.add_argument("--detail", help="observed evidence text (for --record-evidence)")
+    company.add_argument("--label", choices=company_rules.LABELS, help="filter for --companies")
+    company.add_argument("--force", action="store_true", help="check even when not due")
     return parser.parse_args(argv)
+
+
+_COMPANY_COMMANDS = ("companies", "company", "check_company", "record_evidence", "mark_checked", "link_company")
+
+
+def _brief(company: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "name": company["name"], "label": company["label"], "board": company["board"],
+        "checked_at": company["checked_at"], "due": company["due"], "evidence": summarise(company),
+    }
+
+
+def _run_company_command(config: Config, args: argparse.Namespace) -> int:
+    """The company commands: print JSON, exit 0 (2 on a usage problem).
+
+    Output is ASCII-escaped JSON: evidence quotes postings verbatim, emoji
+    included, and a Windows console's code page can't print those.
+    """
+    if config.company_check is None:
+        print(json.dumps({"error": "company_check is not set in config.yaml"}), file=sys.stderr)
+        return 2
+    ledger = Ledger(config.seen_db_path)
+    if args.companies:
+        rows = [_brief(c) for c in ledger.companies() if args.label in (None, c["label"])]
+        print(json.dumps(rows, indent=2))
+        return 0
+    if args.record_evidence:
+        if not args.kind or not args.detail:
+            print(json.dumps({"error": "--record-evidence needs --kind and --detail"}), file=sys.stderr)
+            return 2
+        ledger.record_evidence(args.record_evidence, args.kind, args.detail, args.url)
+        name = args.record_evidence
+    elif args.mark_checked:
+        ledger.mark_company_checked(args.mark_checked)
+        name = args.mark_checked
+    elif args.link_company:
+        ledger.link_company(*args.link_company)
+        name = args.link_company[0]
+    elif args.check_company:
+        with HttpClient() as http:
+            check = CompanyCheck(config.company_check, ledger, http)
+            with http.budget(ADAPTER_TIMEOUT):
+                check.check_company(args.check_company, title=args.title, url=args.url,
+                                    location=args.location, text=args.text,
+                                    company_url=args.company_url, force=args.force)
+            _report_failures(check.failures)
+        name = args.check_company
+    else:
+        name = args.company
+    print(json.dumps(ledger.company(name), indent=2))
+    return 0
 
 
 def _apply_json_override(config: Config, json_path: str | None) -> None:
@@ -294,6 +382,29 @@ def _exit_code(survivors: list[Posting], adapters: list, postings: list[Posting]
     return 0
 
 
+def _company_check(
+    check: CompanyCheck, postings: list[Posting], descriptions: dict[int, str],
+    config: Config, scanned: set[str], http: Any,
+) -> tuple[list[Posting], list[tuple], dict[str, Any]]:
+    """Stage 8b: label survivors by company, cut the ruled-out, sync board lists.
+
+    Returns ``(kept, elimination_rows, report)``; the report becomes the
+    envelope's ``companies`` section.
+    """
+    with http.budget(ADAPTER_TIMEOUT):
+        kept, cut = check.check(postings, descriptions)
+    eliminations = [_sighting_row(p, "filtered:company_check", reason) for p, reason in cut]
+    report = tenants.plan(config.sources, check.ledger, scanned)
+    report["applied"] = False
+    if config.company_check.manage_tenants and config.config_path and (report["added"] or report["removed"]):
+        try:
+            tenants.apply(config.config_path, report["added"], report["removed"])
+            report["applied"] = True
+        except (OSError, ValueError) as exc:
+            report["problem"] = str(exc)
+    return kept, eliminations, report
+
+
 # ---- the pipeline ----------------------------------------------------------
 
 
@@ -312,6 +423,8 @@ def _run_pipeline(config: Config, args: argparse.Namespace) -> int:
         _report_zero_results(zero_names)
 
         ledger = Ledger(config.seen_db_path)
+        check = CompanyCheck(config.company_check, ledger, http) if config.company_check else None
+        scanned = check.harvest(postings, adapters) if check else set()
         unseen = dedup(postings, ledger)
         after_recheck = _recheck_pushdown(unseen, config.query)
         user_filters = load_filters()
@@ -322,6 +435,12 @@ def _run_pipeline(config: Config, args: argparse.Namespace) -> int:
         with http.budget(ADAPTER_TIMEOUT):
             enrich(cheap_survivors, config, ledger, descriptions, http=http, failures=failures)
         survivors, post_eliminations = _post_enrich_filters(cheap_survivors, config, user_filters)
+        company_report = None
+        if check is not None:
+            survivors, company_eliminations, company_report = _company_check(
+                check, survivors, descriptions, config, scanned, http)
+            post_eliminations += company_eliminations
+            failures.extend(check.failures)
 
         eliminations = cheap_eliminations + post_eliminations
         counts = {
@@ -332,7 +451,7 @@ def _run_pipeline(config: Config, args: argparse.Namespace) -> int:
             "emitted": len(survivors),
         }
         _report_failures(failures)
-        emit(survivors, config, counts)
+        emit(survivors, config, counts, companies=company_report)
         rows = list(eliminations)
         for posting in survivors:
             rows.append(_sighting_row(posting, "shortlisted"))
@@ -355,6 +474,8 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(error, ensure_ascii=False), file=sys.stderr)
         return 2
 
+    if any(getattr(args, name) for name in _COMPANY_COMMANDS):
+        return _run_company_command(config, args)
     return _run_pipeline(config, args)
 
 

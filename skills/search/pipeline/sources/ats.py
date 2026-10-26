@@ -15,9 +15,10 @@ All four normalise their board's response to :class:`Posting` and extract
   stays ``None``), so only ``list()`` is implemented; ``fetch_detail()`` stays
   the default ``None``.
 
-Workday pagination traps (limit silently caps at 20, ``total`` caps at 2000,
-offsets past the end wrap to page one) are handled by stopping at
-``min(total, 2000)`` and by a "first id repeated" termination guard.
+Workday pagination traps (limit silently caps at 20, ``total`` caps at 2000 and
+is reported on the first page only, offsets past the end wrap to page one) are
+handled by keeping the first page's total, stopping at ``min(total, 2000)``,
+and by a "first id repeated" termination guard.
 """
 
 from __future__ import annotations
@@ -63,18 +64,37 @@ class _TenantAdapter(BaseAdapter):
         super().__init__(block, http=http)
         raw = block.get("tenants") or []
         self.tenants = [t for t in raw if isinstance(t, str) and t.strip()]
+        #: Every row each tenant's board returned in the last ``list()``, before
+        #: the local filters. A tenant is present only if its fetch succeeded.
+        self.scanned: dict[str, list[dict[str, Any]]] = {}
 
     # -- Adapter -------------------------------------------------------------
 
     def list(self, query: Query) -> tuple[list[Posting], list[Failure]]:
+        self.scanned = {}
         if not self.tenants:
             return [], []
         return collect_tenants(
             self.name,
-            [(t, self._fetch) for t in self.tenants],
-            self._normalise,
+            [(t, self._fetch_and_keep) for t in self.tenants],
+            self._normalise_with_board,
             query,
         )
+
+    def board_rows(self, tenant: str) -> list[dict[str, Any]]:
+        """Every listed role on one tenant's board, as the board returns it."""
+        return self._fetch(tenant, None)
+
+    def _fetch_and_keep(self, tenant: str, query: Query) -> list[dict[str, Any]]:
+        rows = self._fetch(tenant, query)
+        self.scanned[tenant] = rows
+        return rows
+
+    def _normalise_with_board(self, tenant: str, row: dict[str, Any]) -> Posting | None:
+        posting = self._normalise(tenant, row)
+        if posting is not None:
+            posting.board = f"{self.name}:{tenant}"
+        return posting
 
     # -- overridden per board ------------------------------------------------
 
@@ -287,15 +307,28 @@ class LeverAdapter(_TenantAdapter):
 class WorkdayAdapter(_TenantAdapter):
     name = "workday"
 
-    def _fetch(self, tenant: str, query: Query) -> list[dict[str, Any]]:
+    def search_rows(self, tenant: str, text: str, max_pages: int = 5) -> list[dict[str, Any]]:
+        """Rows matching Workday's own search box (it matches locations too).
+
+        A large board's full listing stops at the 2000-row cap, so a place
+        that only appears past it is found this way instead.
+        """
+        return self._fetch(tenant, None, search_text=text, max_pages=max_pages)
+
+    def _fetch(
+        self, tenant: str, query: Query | None, *, search_text: str = "", max_pages: int | None = None,
+    ) -> list[dict[str, Any]]:
         slug, dc, site = self._parse_tenant(tenant)
         host = f"{slug}.{dc}.myworkdayjobs.com"
         url = f"https://{host}/wday/cxs/{slug}/{site}/jobs"
 
         jobs: list[dict[str, Any]] = []
         offset = 0
+        pages = 0
+        total: int | None = None
         first_ids: set[str] = set()
-        while True:
+        while max_pages is None or pages < max_pages:
+            pages += 1
             data = self.http.post_json(
                 url,
                 retry_safe=True,
@@ -303,7 +336,7 @@ class WorkdayAdapter(_TenantAdapter):
                     "appliedFacets": {},
                     "limit": _WORKDAY_LIMIT,
                     "offset": offset,
-                    "searchText": "",
+                    "searchText": search_text,
                 },
             )
             page = _job_list(data, "jobPostings", "jobs", "postings")
@@ -320,8 +353,11 @@ class WorkdayAdapter(_TenantAdapter):
 
             jobs.extend(page)
 
-            total = data.get("total")
-            if isinstance(total, int) and offset + _WORKDAY_LIMIT >= min(total, _WORKDAY_TOTAL_CAP):
+            # Workday reports `total` on the first page only; later pages say 0.
+            reported = data.get("total")
+            if total is None and isinstance(reported, int) and reported > 0:
+                total = reported
+            if total is not None and offset + _WORKDAY_LIMIT >= min(total, _WORKDAY_TOTAL_CAP):
                 break
             offset += _WORKDAY_LIMIT
         return jobs

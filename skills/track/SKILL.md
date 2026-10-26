@@ -31,8 +31,9 @@ The event comes from the user directly, or from `inbox` handing over a recruiter
 2. Set `status` from the event→stage map and `last_activity` to today.
 3. Rewrite `notes` so it reads as where this application stands now, the event's own words kept where they carry detail: who reached out, the format, what was scheduled, what the user learned. A retro two months out reads this, and paraphrase loses the round that failed. What the event superseded comes out.
 4. Set `next_action` and `next_action_date` to the move the event created — the user's reply to draft, the invitation to answer, the follow-up date when the ball is the company's. A terminal `status` empties both.
+5. When a rejection cites work authorization or residence in another country, and `.agents/search/config.yaml` has a `company_check:` block, record it for the search's company check: `python .agents/skills/search/search.py --record-evidence "<company>" --kind rejected --detail "<the rejection's words>"`.
 
-A learning the event carried lives in `notes` and is named in the closing report — it goes nowhere else.
+A learning the event carried lives in `notes` and is named in the closing report — it goes nowhere else, apart from the company-check evidence in step 5.
 
 Done when: the row's `status`, `last_activity`, `notes`, and `next_action` pair all describe the application as it stands after this event.
 
